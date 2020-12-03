@@ -9,8 +9,13 @@ from django.contrib.auth import models as authmodels
 
 # (E) Cocktail
 class Cocktail(models.Model):
+    # Alcoholic Enumeration
+    class Alcoholic(models.IntegerChoices):
+        NA = 0, 'not available'
+        YES = 1, 'alcoholic'
+        NO = 2, 'non alcoholic'
     name = models.CharField(max_length=128)
-    alcoholic = models.BooleanField
+    alcoholic = models.IntegerField(choices=Alcoholic.choices)
     category = models.CharField(max_length=128)
     preparation = models.CharField(max_length=1024)
     thumbnailUrl = models.CharField(max_length=512)
@@ -38,8 +43,8 @@ class CocktailHasIngredient(models.Model):
         TBSP = 4, 'Tbsp'
         PACKAGE = 5, 'package'
     measurement = models.IntegerField(choices=Measurement.choices)
-    amount = models.IntegerField
-    position = models.SmallIntegerField
+    amount = models.IntegerField()
+    position = models.SmallIntegerField()
     cocktail = models.ForeignKey('Cocktail', on_delete=models.CASCADE)
     ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE)
     def __str__(self):
@@ -61,9 +66,14 @@ class IngredientType(models.Model):
 
 # (R) Reviewed: User-Cocktail
 class Reviewed(models.Model):
+    # Likes Enumeration
+    class Likes(models.IntegerChoices):
+        NA = 0, 'not available'
+        YES = 1, 'likes'
+        NO = 2, 'dislikes'
     user = models.ForeignKey(authmodels.User, blank=True, on_delete=models.CASCADE)
     cocktail = models.ForeignKey('Cocktail', blank=True, on_delete=models.CASCADE)
-    likes = models.BooleanField
+    likes = models.IntegerField(choices=Likes.choices)
     def __str__(self):
         return [self.user, self.cocktail]
 
