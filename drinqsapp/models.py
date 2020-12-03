@@ -18,10 +18,14 @@ class Cocktail(models.Model):
     review = models.ManyToManyField(authmodels.User, through='Reviewed')
     characteristic = models.ManyToManyField('Characteristic')
     glass = models.ManyToManyField('Glass')
+    def __str__(self):
+        return self.name
 
 # (E) Glass
 class Glass(models.Model):
     name = models.CharField(max_length=128)
+    def __str__(self):
+        return self.name
 
 # (R) CocktailHasIngredient: Cocktail-Ingredient
 class CocktailHasIngredient(models.Model):
@@ -38,24 +42,34 @@ class CocktailHasIngredient(models.Model):
     position = models.SmallIntegerField
     cocktail = models.ForeignKey('Cocktail', on_delete=models.CASCADE)
     ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE)
+    def __str__(self):
+        return self.measurement
 
 # (E) Ingredient
 class Ingredient(models.Model):
     name = models.CharField(max_length=128)
     ingredientType = models.ForeignKey('IngredientType', blank=False, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name
 
 # (E) Ingredient Type
 class IngredientType(models.Model):
     name = models.CharField(max_length=128)
     user = models.ManyToManyField(authmodels.User, blank=True)
+    def __str__(self):
+        return self.name
 
 # (R) Reviewed: User-Cocktail
 class Reviewed(models.Model):
     user = models.ForeignKey(authmodels.User, blank=True, on_delete=models.CASCADE)
     cocktail = models.ForeignKey('Cocktail', blank=True, on_delete=models.CASCADE)
     likes = models.BooleanField
+    def __str__(self):
+        return [self.user, self.cocktail]
 
 # (E) Characteristic
 class Characteristic(models.Model):
     name = models.CharField(max_length=128)
     user = models.ManyToManyField(authmodels.User, blank=True)
+    def __str__(self):
+        return self.name
