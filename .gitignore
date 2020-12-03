@@ -1,4 +1,4 @@
 # Cache
 __pycache__/
 drinqsapp/__pycache__/
-drinqsapp/migrations/__pycache__
+drinqsapp/migrations/
