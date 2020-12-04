@@ -75,7 +75,7 @@ class Reviewed(models.Model):
     cocktail = models.ForeignKey('Cocktail', blank=True, on_delete=models.CASCADE)
     likes = models.IntegerField(choices=Likes.choices)
     def __str__(self):
-        return [self.user, self.cocktail]
+        return str(self.user)
 
 # (E) Characteristic
 class Characteristic(models.Model):
