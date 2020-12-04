@@ -12,9 +12,6 @@ pipenv
 ###### install dependencies
 `pipenv install`
 
-###### activate virtual environment
-`pipenv shell`
-
 ###### running database migrations (postgresql must be running)
 `python3 manage.py makemigrations`
 
