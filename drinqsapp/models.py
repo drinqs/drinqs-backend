@@ -19,7 +19,7 @@ class Cocktail(models.Model):
     alcoholic = models.IntegerField(choices=Alcoholic.choices)
     category = models.CharField(max_length=128)
     preparation = models.CharField(max_length=2048)
-    thumbnailUrl = models.CharField(max_length=512)
+    thumbnailurl = models.CharField(max_length=512)
     ingredients = models.ManyToManyField('Ingredient', through='CocktailIngredients')
     userReview = models.ManyToManyField(authmodels.User, through='Review')
     glass = models.ForeignKey('Glass', blank=True, on_delete=models.CASCADE)
@@ -58,7 +58,7 @@ class CocktailIngredients(models.Model):
 # (E) Ingredient
 class Ingredient(models.Model):
     name = models.CharField(max_length=128, unique=True)
-    ingredientTag = models.ManyToManyField('IngredientTag', blank=True)
+    ingredienttag = models.ManyToManyField('IngredientTag', blank=True)
     def __str__(self):
         return self.name
 
