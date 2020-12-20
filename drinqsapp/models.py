@@ -15,7 +15,7 @@ class Cocktail(models.Model):
         NA = 0, 'not available'
         YES = 1, 'alcoholic'
         NO = 2, 'non alcoholic'
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     alcoholic = models.IntegerField(choices=Alcoholic.choices)
     category = models.CharField(max_length=128)
     preparation = models.CharField(max_length=2048)
@@ -28,12 +28,17 @@ class Cocktail(models.Model):
 
 # (E) Glass
 class Glass(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     def __str__(self):
         return self.name
 
 # (R) CocktailIngredients: Cocktail-Ingredient
 class CocktailIngredients(models.Model):
+    class Meta:
+        constraints = [
+            # Ensure there is only one entry per cocktail-ingredient combination
+            UniqueConstraint(fields=['cocktail', 'ingredient'], name='unique_cocktailingredients')
+        ]
     # Measurement Enumeration
     class Measurement(models.IntegerChoices):
         ML = 0, 'ml'
@@ -52,27 +57,28 @@ class CocktailIngredients(models.Model):
 
 # (E) Ingredient
 class Ingredient(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     ingredientTag = models.ManyToManyField('IngredientTag', blank=True)
     def __str__(self):
         return self.name
 
 # (E) Ingredient Tag
 class IngredientTag(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     user = models.ManyToManyField(authmodels.User, blank=True)
     def __str__(self):
         return self.name
 
 # (R) Review: User-Cocktail
 class Review(models.Model):
+    class Meta:
+        constraints = [
+            # Ensure that a review is only created once and then updated if necessary
+            UniqueConstraint(fields=['user', 'cocktail'], name='unique_review')
+        ]
     user = models.ForeignKey(authmodels.User, on_delete=models.CASCADE)
     cocktail = models.ForeignKey('Cocktail', on_delete=models.CASCADE)
     likes = models.BooleanField(default=False)
-    # Ensure that a review is only created once and then updated if necessary
-    class Meta:
-        constraints = [
-            UniqueConstraint(fields=['user', 'cocktail'], name='unique_review')
-        ]
+
     def __str__(self):
         return str(self.user)
