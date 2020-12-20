@@ -4,8 +4,7 @@ from graphene_django import DjangoObjectType
 # GraphQL API schema
 
 # Import models
-from drinqsapp.models import Cocktail, Glass, Ingredient, CocktailHasIngredient, Reviewed, Characteristic
-from drinqsapp.models import IngredientType as IngredientCategory
+from drinqsapp.models import Cocktail, Glass, Ingredient, IngredientTag, CocktailIngredients, Review
 
 class CocktailType(DjangoObjectType):
     class Meta:
@@ -20,26 +19,21 @@ class GlassType(DjangoObjectType):
 class IngredientType(DjangoObjectType):
     class Meta:
         model = Ingredient
-        fields = ('id', 'name', 'ingredientType_id')
-
-class CocktailHasIngredientType(DjangoObjectType):
-    class Meta:
-        model = CocktailHasIngredient
-        fields = ('id', 'measurement', 'amount', 'position', 'cocktail_id', 'ingredient_id')
-
-class ReviewedType(DjangoObjectType):
-    class Meta:
-        model = Reviewed
-        fields = ('id', 'likes', 'cocktail_id', 'user_id')
-
-class CharacteristicType(DjangoObjectType):
-    class Meta:
-        model = Characteristic
         fields = ('id', 'name')
 
-class IngredientCategoryType(DjangoObjectType):
+class CocktailIngredientsType(DjangoObjectType):
     class Meta:
-        model = IngredientCategory
+        model = CocktailIngredients
+        fields = ('id', 'measurement', 'amount', 'position')
+
+class ReviewType(DjangoObjectType):
+    class Meta:
+        model = Review
+        fields = ('id', 'likes')
+
+class IngredientTagType(DjangoObjectType):
+    class Meta:
+        model = IngredientTag
         fields = ('id', 'name')
 
 # Query object for GraphQL API requests
@@ -47,10 +41,9 @@ class Query(graphene.ObjectType):
     all_cocktails = graphene.List(CocktailType)
     all_glasses = graphene.List(GlassType)
     all_ingredients = graphene.List(IngredientType)
-    all_recipes = graphene.List(CocktailHasIngredientType)
-    all_reviews = graphene.List(ReviewedType)
-    all_characteristics = graphene.List(CharacteristicType)
-    all_ingredienttypes = graphene.List(IngredientCategoryType)
+    all_recipes = graphene.List(CocktailIngredientsType)
+    all_reviews = graphene.List(ReviewType)
+    all_ingredienttags = graphene.List(IngredientTagType)
 
     def resolve_all_cocktails(self, info):
         return Cocktail.objects.all()
@@ -62,16 +55,13 @@ class Query(graphene.ObjectType):
         return Ingredient.objects.all()
 
     def resolve_all_recipes(self, info):
-        return CocktailHasIngredient.objects.all()
+        return CocktailIngredients.objects.all()
 
     def resolve_all_reviews(self, info):
-        return Reviewed.objects.all()
-
-    def resolve_all_characteristics(self, info):
-        return Characteristic.objects.all()
+        return Review.objects.all()
 
     def resolve_all_ingredienttypes(self, info):
-        return IngredientType.objects.all()
+        return IngredientTag.objects.all()
     
 
 schema = graphene.Schema(query=Query)
