@@ -16,10 +16,10 @@ class Cocktail(models.Model):
         YES = 1, 'alcoholic'
         NO = 2, 'non alcoholic'
     name = models.CharField(max_length=128, unique=True)
-    alcoholic = models.IntegerField(choices=Alcoholic.choices)
-    category = models.CharField(max_length=128)
-    preparation = models.CharField(max_length=2048)
-    thumbnailurl = models.CharField(max_length=512)
+    alcoholic = models.IntegerField(choices=Alcoholic.choices, blank=True)
+    category = models.CharField(max_length=128, blank=True)
+    preparation = models.CharField(max_length=2048, blank=True)
+    thumbnailurl = models.CharField(max_length=512, blank=True)
     ingredients = models.ManyToManyField('Ingredient', through='CocktailIngredients')
     userReview = models.ManyToManyField(authmodels.User, through='Review')
     glass = models.ForeignKey('Glass', blank=True, on_delete=models.CASCADE)
@@ -49,7 +49,7 @@ class CocktailIngredients(models.Model):
         PACKAGE = 5, 'package'
     measurement = models.IntegerField(choices=Measurement.choices)
     amount = models.IntegerField()
-    position = models.SmallIntegerField()
+    position = models.SmallIntegerField(blank=True)
     cocktail = models.ForeignKey('Cocktail', on_delete=models.CASCADE)
     ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE)
     def __str__(self):
