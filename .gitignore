@@ -1,5 +1,3 @@
 # Cache
-__pycache__/
-drinqsapp/__pycache__/
-drinqsapp/migrations/
-/data
+__pycache__
+migrations
