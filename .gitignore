@@ -1,3 +1,5 @@
 # Cache
 __pycache__
 migrations
+data
+drinqsapp/loaddata.py

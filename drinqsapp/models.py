@@ -41,7 +41,7 @@ class Cocktail(models.Model):
     preparation = models.TextField(blank=True)
     thumbnailurl = models.CharField(max_length=512, blank=True)
     ingredients = models.ManyToManyField(Ingredient, through='CocktailIngredients')
-    userReview = models.ManyToManyField(authmodels.User, through='Review')
+    userreview = models.ManyToManyField(authmodels.User, through='Review')
     glass = models.ForeignKey(Glass, blank=True, on_delete=models.CASCADE)
     def __str__(self):
         return self.name
@@ -51,7 +51,9 @@ class CocktailIngredients(models.Model):
     class Meta:
         constraints = [
             # Ensure there is only one entry per cocktail-ingredient combination
-            UniqueConstraint(fields=['cocktail', 'ingredient'], name='unique_cocktailingredients')
+            UniqueConstraint(fields=['cocktail', 'ingredient'], name='unique_cocktailingredients'),
+            # Ensure no cocktail has multiple ingredients in the same position
+            UniqueConstraint(fields=['cocktail', 'position'], name='unique_cocktailposition')
         ]
     measurement = models.IntegerField(
         choices=(
@@ -79,6 +81,5 @@ class Review(models.Model):
     user = models.ForeignKey(authmodels.User, on_delete=models.CASCADE)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     likes = models.BooleanField(default=False)
-
     def __str__(self):
         return str(self.user)

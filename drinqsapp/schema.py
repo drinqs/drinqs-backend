@@ -1,70 +1,63 @@
-import graphene
 from graphene_django import DjangoObjectType
-import graphene_django
-from graphene import ObjectType, String, Field
-
-# GraphQL API schema
+from graphene_django.filter import DjangoFilterConnectionField
+from graphene import relay, ObjectType
+import graphene
 
 # Import models
 from drinqsapp.models import Cocktail, Glass, Ingredient, IngredientTag, CocktailIngredients, Review
+from django.contrib.auth import models as authmodels
 
-class CocktailModel(DjangoObjectType):
+class Cocktails(DjangoObjectType):
     class Meta:
         model = Cocktail
-        fields = ('id', 'name', 'alcoholic', 'category', 'preparation', 'thumbnailUrl')
+        filter_fields = ['id', 'name', 'alcoholic', 'category', 'glass', 'ingredients', 'userreview']
+        interfaces = (relay.Node, )
 
-class GlassType(DjangoObjectType):
+class Glasses(DjangoObjectType):
     class Meta:
         model = Glass
-        fields = ('id', 'name')
+        filter_fields = ['id', 'name']
+        interfaces = (relay.Node, )
 
-class IngredientType(DjangoObjectType):
+class Ingredients(DjangoObjectType):
     class Meta:
         model = Ingredient
-        fields = ('id', 'name')
+        filter_fields = ['id', 'name', 'ingredienttag']
+        interfaces = (relay.Node, )
 
-class CocktailIngredientsType(DjangoObjectType):
-    class Meta:
-        model = CocktailIngredients
-        fields = ('id', 'measurement', 'amount', 'position')
-
-class ReviewType(DjangoObjectType):
-    class Meta:
-        model = Review
-        fields = ('id', 'likes')
-
-class IngredientTagType(DjangoObjectType):
+class IngredientTags(DjangoObjectType):
     class Meta:
         model = IngredientTag
-        fields = ('id', 'name')
+        filter_fields = ['id', 'name', 'user']
+        interfaces = (relay.Node, )
+
+class Reviews(DjangoObjectType):
+    class Meta:
+        model = Review
+        filter_fields = ['id', 'user', 'cocktail', 'likes']
+        interfaces = (relay.Node, )
+
+class Users(DjangoObjectType):
+    class Meta:
+        model = authmodels.User
+        filter_fields = ['id', 'username']
+        interfaces = (relay.Node, )
+
+class Recipes(DjangoObjectType):
+    class Meta:
+        model = CocktailIngredients
+        filter_fields = ['id', 'cocktail', 'ingredient']
+        interfaces = (relay.Node, )
 
 # Query object for GraphQL API requests
 class Query(graphene.ObjectType):
-    cocktail = Field()
-    all_cocktails = graphene.List(CocktailType)
-    all_glasses = graphene.List(GlassType)
-    all_ingredients = graphene.List(IngredientType)
-    all_recipes = graphene.List(CocktailIngredientsType)
-    all_reviews = graphene.List(ReviewType)
-    all_ingredienttags = graphene.List(IngredientTagType)
+    cocktails = DjangoFilterConnectionField(Cocktails)
+    glasses = DjangoFilterConnectionField(Glasses)
+    ingredients = DjangoFilterConnectionField(Ingredients)
+    ingredienttags = DjangoFilterConnectionField(IngredientTags)
+    reviews = DjangoFilterConnectionField(Reviews)
+    users = DjangoFilterConnectionField(Users)
+    recipes = DjangoFilterConnectionField(Recipes)
 
-    def resolve_all_cocktails(self, info):
-        return Cocktail.objects.all()
-
-    def resolve_all_glasses(self, info):
-        return Glass.objects.all()
-    
-    def resolve_all_ingredients(self, info):
-        return Ingredient.objects.all()
-
-    def resolve_all_recipes(self, info):
-        return CocktailIngredients.objects.all()
-
-    def resolve_all_reviews(self, info):
-        return Review.objects.all()
-
-    def resolve_all_ingredienttypes(self, info):
-        return IngredientTag.objects.all()
-    
 
 schema = graphene.Schema(query=Query)

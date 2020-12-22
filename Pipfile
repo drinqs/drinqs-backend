@@ -8,6 +8,7 @@ Django = "*"
 psycopg2-binary = "*"
 graphene-django = "*"
 django-filter = "*"
+sqlalchemy = "*"
 pandas = "*"
 Scrapy = "*"
 
