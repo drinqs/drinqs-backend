@@ -1,13 +1,13 @@
-# #! /usr/bin/env bash
+#!/bin/bash
 
-# set -euo pipefail
+set -euo pipefail
 
-# function cleanup {
-#   ENV=test "$(dirname "$0")/compose" down
-# }
+function cleanup {
+  ENV=test "$(dirname "$0")/compose" down
+}
 
-# trap cleanup SIGHUP SIGINT
+trap cleanup SIGHUP SIGINT
 
-# command=${@:-up}
+command=${@:-up}
 
-# ENV=test "$(dirname "$0")/compose" $command
+ENV=test "$(dirname "$0")/compose" $command
