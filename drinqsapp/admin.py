@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # TODO
 # Remove for production
-from .models import Cocktail, Glass, Ingredient, IngredientType, CocktailHasIngredient, Reviewed, Characteristic
+from .models import Cocktail, Glass, Ingredient, IngredientTag, CocktailIngredients, Review
 
 # Register your models here.
 
@@ -12,7 +12,6 @@ from .models import Cocktail, Glass, Ingredient, IngredientType, CocktailHasIngr
 admin.site.register(Cocktail)
 admin.site.register(Glass)
 admin.site.register(Ingredient)
-admin.site.register(IngredientType)
-admin.site.register(CocktailHasIngredient)
-admin.site.register(Reviewed)
-admin.site.register(Characteristic)
+admin.site.register(IngredientTag)
+admin.site.register(CocktailIngredients)
+admin.site.register(Review)

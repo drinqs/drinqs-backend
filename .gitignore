@@ -148,3 +148,8 @@ cython_debug/
 
 drinqsapp/migrations/
 docker-compose.user.yml
+
+# Cache
+migrations
+data
+drinqsapp/loaddata.py

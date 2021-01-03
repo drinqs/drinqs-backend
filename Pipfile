@@ -4,11 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+Django = "*"
 psycopg2-binary = "*"
 graphene-django = "*"
-numpy = "*"
+django-filter = "*"
+sqlalchemy = "*"
 pandas = "*"
-Django = "*"
 Scrapy = "*"
 
 [dev-packages]
