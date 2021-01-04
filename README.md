@@ -1,21 +1,27 @@
 # Drinqs Backend
 
 ## Prerequisites
-Python 3.9
 
-PostgreSQL 13.1
-
-pipenv
+Docker
 
 ## Build Setup
 
-###### install dependencies
-`pipenv install`
+#### Build Container
 
-###### running database migrations (postgresql must be running)
-`python3 manage.py makemigrations`
+`bin/compose build`
 
-`python3 manage.py migrate`
+#### serve at localhost:8000
 
-###### serve at localhost:8000
-`python3 manage.py runserver`
+`bin/dev`
+
+#### running database migrations
+
+`bin/manage makemigrations`
+
+`bin/manage migrate`
+
+## Further Commands
+
+- `bin/manage <command>` equals `python manage.py <command>`
+- `bin/exec <command>` equals `bin/compose exec app  <command>`
+- `bin/compose <command>` equals `docker-compose <command>` (uses full docker stack with sync and development files)
