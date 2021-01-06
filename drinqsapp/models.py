@@ -30,19 +30,19 @@ class Ingredient(models.Model):
 # (E) Cocktail
 class Cocktail(models.Model):
     name = models.CharField(max_length=128, unique=True)
-    alcoholic = models.IntegerField(blank=True, 
+    alcoholic = models.IntegerField(blank=True, null=True,
     choices =(
         (0, 'not available'),
         (1, 'alcoholic'),
         (2, 'non alcoholic')
-        )
+        ),
     )
-    category = models.CharField(max_length=128, blank=True)
-    preparation = models.TextField(blank=True)
-    thumbnailurl = models.CharField(max_length=512, blank=True)
+    category = models.CharField(max_length=128, blank=True, null=True)
+    preparation = models.TextField(blank=True, null=True)
+    thumbnailurl = models.CharField(max_length=512, blank=True, null=True)
     ingredients = models.ManyToManyField(Ingredient, through='CocktailIngredients')
     userreview = models.ManyToManyField(authmodels.User, through='Review')
-    glass = models.ForeignKey(Glass, blank=True, on_delete=models.CASCADE)
+    glass = models.ForeignKey(Glass, blank=True, null=True, on_delete=models.CASCADE)
     def __str__(self):
         return self.name
 
@@ -65,7 +65,7 @@ class CocktailIngredients(models.Model):
             (5, 'package'))
         )
     amount = models.FloatField()
-    position = models.SmallIntegerField(blank=True)
+    position = models.SmallIntegerField(blank=True, null=True)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     def __str__(self):

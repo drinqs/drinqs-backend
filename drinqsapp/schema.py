@@ -1,5 +1,4 @@
 from graphene_django import DjangoObjectType
-# from graphene_django.filter import DjangoFilterConnectionField
 from graphene import relay, ObjectType, Field, List
 import graphene
 
@@ -11,15 +10,11 @@ class Recipes(DjangoObjectType):
     class Meta:
         model = CocktailIngredients
         fields = ('id', 'measurement', 'amount', 'position', 'cocktail', 'ingredient')
-        # filter_fields = ['id', 'cocktail', 'ingredient']
-        # interfaces = (relay.Node, )
 
 class Cocktails(DjangoObjectType):
     class Meta:
         model = Cocktail
         fields = ('id', 'name', 'alcoholic', 'category', 'glass', 'ingredients', 'preparation', 'thumbnailurl', 'userreview')
-        # filter_fields = ['id', 'name', 'alcoholic', 'category', 'glass', 'ingredients', 'userreview']
-        # interfaces = (relay.Node, )
 
     cocktail_ingredients = List(Recipes)
 
@@ -30,47 +25,29 @@ class Glasses(DjangoObjectType):
     class Meta:
         model = Glass
         fields = ('id', 'name')
-        # filter_fields = ['id', 'name']
-        # interfaces = (relay.Node, )
 
 class Ingredients(DjangoObjectType):
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'ingredienttag')
-        # filter_fields = ['id', 'name', 'ingredienttag']
-        # interfaces = (relay.Node, )
 
 class IngredientTags(DjangoObjectType):
     class Meta:
         model = IngredientTag
         fields = ('id', 'name', 'user')
-        # filter_fields = ['id', 'name', 'user']
-        # interfaces = (relay.Node, )
 
 class Reviews(DjangoObjectType):
     class Meta:
         model = Review
         fields = ('id', 'user', 'cocktail', 'likes')
-        # filter_fields = ['id', 'user', 'cocktail', 'likes']
-        # interfaces = (relay.Node, )
 
 class Users(DjangoObjectType):
     class Meta:
         model = authmodels.User
         fields = ('id', 'username', 'first_name', 'last_name', 'email')
-        # filter_fields = ['id', 'username']
-        # interfaces = (relay.Node, )
 
 # Query object for GraphQL API requests
 class Query(graphene.ObjectType):
-    # cocktails = DjangoFilterConnectionField(Cocktails)
-    # glasses = DjangoFilterConnectionField(Glasses)
-    # ingredients = DjangoFilterConnectionField(Ingredients)
-    # ingredienttags = DjangoFilterConnectionField(IngredientTags)
-    # reviews = DjangoFilterConnectionField(Reviews)
-    # users = DjangoFilterConnectionField(Users)
-    # recipes = DjangoFilterConnectionField(Recipes)
-
     glasses = graphene.List(Glasses)
     ingredients = graphene.List(Ingredients)
     ingredienttags = graphene.List(IngredientTags)
