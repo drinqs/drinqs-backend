@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Django = "*"
+psycopg2-binary = "*"
+graphene-django = "*"
+django-filter = "*"
+sqlalchemy = "*"
+pandas = "*"
+Scrapy = "*"
+dj-database-url = "*"
+gunicorn = "*"
+whitenoise = "*"
+
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
