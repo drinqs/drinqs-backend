@@ -4,4 +4,7 @@ graphene-django
 numpy
 pandas
 Scrapy
+sqlalchemy
 dj-database-url
+gunicorn
+whitenoise
