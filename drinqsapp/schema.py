@@ -1,11 +1,18 @@
 from graphene_django import DjangoObjectType
 # from graphene_django.filter import DjangoFilterConnectionField
-from graphene import relay, ObjectType
+from graphene import relay, ObjectType, Field, List
 import graphene
 
 # Import models
 from drinqsapp.models import Cocktail, Glass, Ingredient, IngredientTag, CocktailIngredients, Review
 from django.contrib.auth import models as authmodels
+
+class Recipes(DjangoObjectType):
+    class Meta:
+        model = CocktailIngredients
+        fields = ('id', 'measurement', 'amount', 'position', 'cocktail', 'ingredient')
+        # filter_fields = ['id', 'cocktail', 'ingredient']
+        # interfaces = (relay.Node, )
 
 class Cocktails(DjangoObjectType):
     class Meta:
@@ -13,6 +20,11 @@ class Cocktails(DjangoObjectType):
         fields = ('id', 'name', 'alcoholic', 'category', 'glass', 'ingredients', 'preparation', 'thumbnailurl', 'userreview')
         # filter_fields = ['id', 'name', 'alcoholic', 'category', 'glass', 'ingredients', 'userreview']
         # interfaces = (relay.Node, )
+
+    cocktail_ingredients = List(Recipes)
+
+    def resolve_cocktail_ingredients(parent, info):
+        return CocktailIngredients.objects.filter(cocktail_id=parent.id)
 
 class Glasses(DjangoObjectType):
     class Meta:
@@ -49,13 +61,6 @@ class Users(DjangoObjectType):
         # filter_fields = ['id', 'username']
         # interfaces = (relay.Node, )
 
-class Recipes(DjangoObjectType):
-    class Meta:
-        model = CocktailIngredients
-        fields = ('id', 'measurement', 'amount', 'position', 'cocktail', 'ingredient')
-        # filter_fields = ['id', 'cocktail', 'ingredient']
-        # interfaces = (relay.Node, )
-
 # Query object for GraphQL API requests
 class Query(graphene.ObjectType):
     # cocktails = DjangoFilterConnectionField(Cocktails)
@@ -81,7 +86,7 @@ class Query(graphene.ObjectType):
     def resolve_cocktails(self, info, **args):
         if args.get('glass'):
             args['glass'] = Glass.objects.get(name=args.get('glass')).id
-        
+
         try:
             return Cocktail.objects.filter(**args)
         except Cocktail.DoesNotExist:
@@ -92,7 +97,7 @@ class Query(graphene.ObjectType):
 
     def resolve_ingredients(self, info):
         return Ingredient.objects.all()
-    
+
     def resolve_ingredienttags(self, info):
         return IngredientTag.objects.all()
 
@@ -101,7 +106,7 @@ class Query(graphene.ObjectType):
 
     def resolve_recipes(self, info):
         return CocktailIngredients.objects.all()
-    
+
     def resolve_recipe(self, info, cocktailid):
         # c_id = Cocktail.objects.get(name=cocktail).id
         try:
@@ -129,7 +134,7 @@ class Query(graphene.ObjectType):
         if args.get('cocktail'):
             args['cocktail_id'] = Cocktail.objects.get(name=args.get('cocktail')).id
             del args['cocktail']
-            
+
         try:
             return Review.objects.filter(**args)
         except Review.DoesNotExist:
