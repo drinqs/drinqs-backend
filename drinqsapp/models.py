@@ -69,7 +69,7 @@ class CocktailIngredients(models.Model):
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     def __str__(self):
-        return str(self.cocktail)
+        return f"{self.cocktail}-{self.ingredient}"
 
 # (R) Review: User-Cocktail
 class Review(models.Model):
@@ -82,4 +82,4 @@ class Review(models.Model):
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     likes = models.BooleanField(default=False)
     def __str__(self):
-        return str(self.user)
+        return f"{self.user}-{self.cocktail}"
