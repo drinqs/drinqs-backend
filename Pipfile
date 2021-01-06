@@ -11,6 +11,10 @@ django-filter = "*"
 sqlalchemy = "*"
 pandas = "*"
 Scrapy = "*"
+dj-database-url = "*"
+gunicorn = "*"
+whitenoise = "*"
+
 
 [dev-packages]
 
