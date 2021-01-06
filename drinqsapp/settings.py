@@ -28,7 +28,7 @@ SECRET_KEY = os.environ['SECRET_KEY_BASE']
 # DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['drinqs.de', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['app.drinqs.de', 'dokku.drinqs.de', 'drinqs.de', '127.0.0.1', 'localhost']
 
 
 # Application definition
