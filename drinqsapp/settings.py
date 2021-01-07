@@ -44,9 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-GRAPHENE = {
-    "SCHEMA": "drinqsapp.schema.schema"
-}
+# GRAPHENE = {
+#     "SCHEMA": "drinqsapp.schema.schema"
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
