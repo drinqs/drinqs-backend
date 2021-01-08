@@ -14,7 +14,8 @@ Scrapy = "*"
 dj-database-url = "*"
 gunicorn = "*"
 whitenoise = "*"
-
+django-graphql-jwt = "*"
+pyjwt = "~=1.7"
 
 [dev-packages]
 

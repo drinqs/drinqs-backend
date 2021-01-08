@@ -2,6 +2,7 @@
 from graphene_django import DjangoObjectType
 import graphene
 from graphene import List, Field
+from graphql_jwt.decorators import login_required
 
 # Import models
 from drinqsapp.models import Cocktail, Glass, Ingredient, IngredientTag, CocktailIngredients, Review
@@ -61,6 +62,7 @@ class Query(graphene.ObjectType):
     currentuser = graphene.Field(Users)
     reviews = graphene.List(Reviews, username=graphene.String(), cocktail = graphene.String(), likes=graphene.Boolean())
 
+    @login_required
     def resolve_cocktails(self, info, **args):
         if args.get('glass'):
             args['glass'] = Glass.objects.get(name=args.get('glass')).id
@@ -70,21 +72,27 @@ class Query(graphene.ObjectType):
         except Cocktail.DoesNotExist:
             return None
 
+    @login_required
     def resolve_glasses(self, info):
         return Glass.objects.all()
 
+    @login_required
     def resolve_ingredients(self, info):
         return Ingredient.objects.all()
 
+    @login_required
     def resolve_ingredienttags(self, info):
         return IngredientTag.objects.all()
 
+    @login_required
     def resolve_users(self, info):
         return authmodels.User.objects.all()
 
+    @login_required
     def resolve_recipes(self, info):
         return CocktailIngredients.objects.all()
 
+    @login_required
     def resolve_recipe(self, info, cocktailid):
         # c_id = Cocktail.objects.get(name=cocktail).id
         try:
@@ -92,18 +100,22 @@ class Query(graphene.ObjectType):
         except CocktailIngredients.DoesNotExist:
             return None
 
+    @login_required
     def resolve_nextcocktail(self, info):
         try:
             return Cocktail.objects.get(pk=1)
         except Cocktail.DoesNotExist:
             return None
 
+    @login_required
     def resolve_currentuser(self, info):
+        print(info.context.user.id)
         try:
-            return authmodels.User.objects.get(pk=1)
+            return authmodels.User.objects.get(pk=info.context.user.id)
         except authmodels.User.DoesNotExist:
             return None
 
+    @login_required
     def resolve_reviews(self, info, **args):
         if args.get('username'):
             args['user_id'] = authmodels.User.objects.get(username=args.get('username')).id
