@@ -2,7 +2,7 @@
 from graphene_django import DjangoObjectType
 import graphene
 from graphene import List, Field
-from graphql_jwt.decorators import login_required
+from graphql_jwt.decorators import login_required, staff_member_required
 
 # Import models
 from drinqsapp.models import Cocktail, Glass, Ingredient, IngredientTag, CocktailIngredients, Review
@@ -84,7 +84,7 @@ class Query(graphene.ObjectType):
     def resolve_ingredienttags(self, info):
         return IngredientTag.objects.all()
 
-    @login_required
+    @staff_member_required
     def resolve_users(self, info):
         return authmodels.User.objects.all()
 
