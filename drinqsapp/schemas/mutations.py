@@ -9,14 +9,18 @@ class UserMutation(graphene.Mutation):
       username = graphene.String(required=True)
       email = graphene.String(required=True)
       password = graphene.String(required=True)
+      firstname = graphene.String()
+      lastname = graphene.String()
 
 
     # The class attributes define the response of the mutation
     user = graphene.Field(Users)
 
     @classmethod
-    def mutate(cls, root, info, username, email, password):
+    def mutate(cls, root, info, username, email, password, firstname, lastname):
         user = authmodels.User.objects.create_user(username, email, password)
+        user.first_name = firstname
+        user.lastname = lastname
         user.save()
         # Notice we return an instance of this mutation
         return UserMutation(user=user)
