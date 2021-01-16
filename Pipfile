@@ -15,6 +15,7 @@ dj-database-url = "*"
 gunicorn = "*"
 whitenoise = "*"
 django-graphql-jwt = "*"
+django-cors-headers = "*"
 pyjwt = "~=1.7"
 
 [dev-packages]
