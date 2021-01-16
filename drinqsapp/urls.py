@@ -20,6 +20,9 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 
+from drinqsapp.schema import schema
+
+
 # Local imports
 from . import views
 
@@ -29,5 +32,5 @@ urlpatterns = [
     # path for healtcheck (needed for production deployment)
     path('.well-known/health_check', views.healthcheck, name='healthcheck'),
     # path for GraphQL
-    path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
 ]

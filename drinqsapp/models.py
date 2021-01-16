@@ -40,14 +40,14 @@ class Cocktail(models.Model):
     category = models.CharField(max_length=128, blank=True, null=True)
     preparation = models.TextField(blank=True, null=True)
     thumbnailurl = models.CharField(max_length=512, blank=True, null=True)
-    ingredients = models.ManyToManyField(Ingredient, through='CocktailIngredients')
+    ingredients = models.ManyToManyField(Ingredient, through='CocktailIngredient')
     userreview = models.ManyToManyField(authmodels.User, through='Review')
     glass = models.ForeignKey(Glass, blank=True, null=True, on_delete=models.CASCADE)
     def __str__(self):
         return self.name
 
-# (R) CocktailIngredients: Cocktail-Ingredient
-class CocktailIngredients(models.Model):
+# (R) CocktailIngredient: Cocktail-Ingredient
+class CocktailIngredient(models.Model):
     class Meta:
         constraints = [
             # Ensure there is only one entry per cocktail-ingredient combination
