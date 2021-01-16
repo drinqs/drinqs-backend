@@ -1,6 +1,6 @@
 import graphene
 import graphql_jwt
-from drinqsapp.schemas.queries import Users
+from drinqsapp.schemas.queries import User
 from django.contrib.auth import models as authmodels
 
 class UserMutation(graphene.Mutation):
@@ -14,10 +14,10 @@ class UserMutation(graphene.Mutation):
 
 
     # The class attributes define the response of the mutation
-    user = graphene.Field(Users)
+    user = graphene.Field(User)
 
     @classmethod
-    def mutate(cls, root, info, username, email, password, firstname, lastname):
+    def mutate(cls, root, info, username, email, password, first_name, last_name):
         user = authmodels.User.objects.create_user(username, email, password)
         user.first_name = first_name
         user.last_name = last_name
