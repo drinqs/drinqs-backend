@@ -8,6 +8,10 @@ from graphql_jwt.decorators import login_required, staff_member_required
 import drinqsapp.models as models
 from django.contrib.auth import models as authmodels
 
+# TODO:
+# Remove if recommender is implemented and next_cocktail should not deliver random
+import random
+
 class CocktailIngredient(DjangoObjectType):
     class Meta:
         model = models.CocktailIngredient
@@ -92,7 +96,10 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_next_cocktail(self, info):
         try:
-            return models.Cocktail.objects.get(pk=1)
+            cocktail_ids = models.Cocktail.objects.filter().values('id')
+            cocktail_id = random.choice(cocktail_ids)["id"]
+
+            return models.Cocktail.objects.get(pk=cocktail_id)
         except models.Cocktail.DoesNotExist:
             return None
 
