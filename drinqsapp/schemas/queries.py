@@ -11,7 +11,13 @@ from django.contrib.auth import models as authmodels
 class CocktailIngredient(DjangoObjectType):
     class Meta:
         model = models.CocktailIngredient
-        fields = ('id', 'measurement', 'amount', 'position', 'cocktail', 'ingredient')
+        fields = ('id', 'amount', 'position', 'cocktail', 'ingredient')
+
+    measurement = graphene.String()
+    def resolve_measurement(self, info):
+        value_map = { k: v for k, v in models.CocktailIngredient.MEASUREMENT_CHOICES }
+
+        return value_map[self.measurement]
 
 class Cocktail(DjangoObjectType):
     class Meta:
