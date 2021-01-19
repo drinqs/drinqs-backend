@@ -1,7 +1,10 @@
 import graphene
 import graphql_jwt
-from drinqsapp.schemas.queries import User, Error
+from drinqsapp.schemas.queries import User, Error, Review
 from django.contrib.auth import models as authmodels
+
+import drinqsapp.models as models
+from graphql_jwt.decorators import login_required, staff_member_required
 
 class UserMutation(graphene.Mutation):
     class Arguments:
@@ -40,11 +43,40 @@ class UserMutation(graphene.Mutation):
         # Notice we return an instance of this mutation
         return UserMutation(user=user, errors=errors)
 
+class ReviewMutation(graphene.Mutation):
+    class Arguments:
+        # The input arguments for this mutation
+        cocktail_id = graphene.ID(required=True)
+        likes = graphene.Boolean()
+        bookmarked = graphene.Boolean()
+
+    # The class attributes define the response of the mutation
+    review = graphene.Field(Review)
+
+    @classmethod
+    @login_required
+    def mutate(cls, root, info, cocktail_id, **kwargs):
+        user_id = info.context.user.id
+
+        try:
+            review = models.Review.objects.get(cocktail_id=cocktail_id, user_id=user_id)
+        except models.Review.DoesNotExist:
+            review = models.Review.objects.create(cocktail_id=cocktail_id, user_id=user_id)
+
+        review.likes = kwargs.get('likes', None)
+        review.bookmarked = kwargs.get('bookmarked', None)
+        review.save()
+
+        # Notice we return an instance of this mutation
+        return ReviewMutation(review=review)
+
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     refresh_token = graphql_jwt.Refresh.Field()
 
     create_user = UserMutation.Field()
+
+    review = ReviewMutation.Field()
 
     # create user
 

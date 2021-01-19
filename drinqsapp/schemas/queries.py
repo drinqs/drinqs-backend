@@ -41,7 +41,7 @@ class IngredientTag(DjangoObjectType):
 class Review(DjangoObjectType):
     class Meta:
         model = models.Review
-        fields = ('id', 'user', 'cocktail', 'likes')
+        fields = ('id', 'user', 'cocktail', 'likes', 'bookmarked')
 
 class User(DjangoObjectType):
     class Meta:
