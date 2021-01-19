@@ -48,6 +48,9 @@ class User(DjangoObjectType):
         model = authmodels.User
         fields = ('id', 'username', 'first_name', 'last_name', 'email')
 
+class Error(graphene.ObjectType):
+    key = graphene.NonNull(graphene.String)
+    message = graphene.NonNull(graphene.String)
 
 class Query(graphene.ObjectType):
     cocktails = graphene.List(Cocktail, alcoholic=graphene.String(), category=graphene.String(), glass=graphene.String())
