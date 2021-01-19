@@ -19,8 +19,8 @@ class Cocktail(DjangoObjectType):
         fields = ('id', 'name', 'alcoholic', 'category', 'glass', 'ingredients', 'preparation', 'thumbnail_url', 'reviews')
 
     cocktail_ingredients = List(CocktailIngredient)
-    def resolve_cocktail_ingredients(parent, info):
-        return models.CocktailIngredient.objects.filter(cocktail_id=parent.id)
+    def resolve_cocktail_ingredients(self, info):
+        return models.CocktailIngredient.objects.filter(cocktail_id=self.id)
 
 class Glass(DjangoObjectType):
     class Meta:
