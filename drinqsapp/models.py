@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models import UniqueConstraint
 from django.contrib.auth import models as authmodels
 
+from autoslug import AutoSlugField
+
 # Models for drinqs application.
 # (E) Entity model
 # (R) Relationship model: A-B
@@ -39,6 +41,7 @@ class Cocktail(models.Model):
     )
 
     name = models.CharField(max_length=128, unique=True)
+    slug = AutoSlugField(populate_from='name', max_length=128, always_update=True, sep='--', unique=True)
     alcoholic = models.IntegerField(blank=True, null=True, choices=ALCOHOLIC_CHOICES)
     category = models.CharField(max_length=128, blank=True, null=True)
     preparation = models.TextField(blank=True, null=True)
