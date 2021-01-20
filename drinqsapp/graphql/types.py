@@ -41,7 +41,10 @@ class Cocktail(DjangoObjectType):
     review = graphene.Field(Review)
     def resolve_review(self, info):
         user_id = info.context.user.id
-        return models.Review.objects.filter(cocktail_id=self.id, user_id=user_id)
+        try:
+            return models.Review.objects.get(cocktail_id=self.id, user_id=user_id)
+        except models.Review.DoesNotExist:
+            return None
 
 class Error(graphene.ObjectType):
     key = graphene.NonNull(graphene.String)
