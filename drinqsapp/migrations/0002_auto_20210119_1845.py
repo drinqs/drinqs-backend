@@ -20,11 +20,6 @@ class Migration(migrations.Migration):
                 ('position', models.SmallIntegerField(blank=True, null=True)),
             ],
         ),
-        migrations.AddField(
-            model_name='review',
-            name='bookmarked',
-            field=models.BooleanField(default=False, null=True),
-        ),
         migrations.AlterField(
             model_name='cocktail',
             name='alcoholic',
