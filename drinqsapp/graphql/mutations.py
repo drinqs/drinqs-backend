@@ -1,5 +1,4 @@
 import graphene
-import graphql_jwt
 from graphql_jwt.decorators import login_required, staff_member_required
 
 import drinqsapp.graphql.types as types
@@ -87,8 +86,6 @@ class ProfileMutation(graphene.Mutation):
             user.last_name = kwargs.get('last_name', user.last_name)
             user.save()
 
-
-
         # Notice we return an instance of this mutation
         return ProfileMutation(user=user, errors=errors)
 
@@ -118,12 +115,3 @@ class ReviewMutation(graphene.Mutation):
 
         # Notice we return an instance of this mutation
         return ReviewMutation(review=review)
-
-class Mutation(graphene.ObjectType):
-    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
-    refresh_token = graphql_jwt.Refresh.Field()
-
-    create_user = UserMutation.Field()
-    update_profile = ProfileMutation.Field()
-
-    review = ReviewMutation.Field()
