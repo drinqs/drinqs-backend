@@ -53,11 +53,7 @@ class Query(graphene.ObjectType):
     me = graphene.Field(types.User)
     @login_required
     def resolve_me(self, info):
-        print(info.context.user.id)
-        try:
-            return authmodels.User.objects.get(pk=info.context.user.id)
-        except authmodels.User.DoesNotExist:
-            return None
+        return authmodels.User.objects.get(pk=info.context.user.id)
 
     reviews = graphene.List(
         types.Review,
@@ -75,7 +71,4 @@ class Query(graphene.ObjectType):
             args['cocktail_id'] = models.Cocktail.objects.get(name=args.get('cocktail')).id
             del args['cocktail']
 
-        try:
-            return models.Review.objects.filter(**args)
-        except models.Review.DoesNotExist:
-            return None
+        return models.Review.objects.filter(**args)
