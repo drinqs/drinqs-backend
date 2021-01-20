@@ -146,10 +146,8 @@ cython_debug/
 # --- Project specific
 ################################################################################
 
-drinqsapp/migrations/
 docker-compose.user.yml
 
 # Cache
-migrations
 data
 drinqsapp/loaddata.py

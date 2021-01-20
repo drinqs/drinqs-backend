@@ -47,7 +47,7 @@ class ReviewMutation(graphene.Mutation):
     class Arguments:
         # The input arguments for this mutation
         cocktail_id = graphene.ID(required=True)
-        likes = graphene.Boolean()
+        liked = graphene.Boolean()
         bookmarked = graphene.Boolean()
 
     # The class attributes define the response of the mutation
@@ -63,7 +63,7 @@ class ReviewMutation(graphene.Mutation):
         except models.Review.DoesNotExist:
             review = models.Review.objects.create(cocktail_id=cocktail_id, user_id=user_id)
 
-        review.likes = kwargs.get('likes', None)
+        review.liked = kwargs.get('liked', None)
         review.bookmarked = kwargs.get('bookmarked', None)
         review.save()
 
