@@ -1,10 +1,11 @@
 import graphene
 import graphql_jwt
-from drinqsapp.schemas.queries import User, Error, Review
+from graphql_jwt.decorators import login_required, staff_member_required
+
+import drinqsapp.graphql.types as types
+import drinqsapp.models as models
 from django.contrib.auth import models as authmodels
 
-import drinqsapp.models as models
-from graphql_jwt.decorators import login_required, staff_member_required
 
 class UserMutation(graphene.Mutation):
     class Arguments:
@@ -16,8 +17,8 @@ class UserMutation(graphene.Mutation):
         last_name = graphene.String()
 
     # The class attributes define the response of the mutation
-    user = graphene.Field(User)
-    errors = graphene.List(Error)
+    user = graphene.NonNull(types.User)
+    errors = graphene.List(graphene.NonNull(types.Error), required=True)
 
     @classmethod
     def mutate(cls, root, info, username, email, password, first_name, last_name):
@@ -50,7 +51,7 @@ class ReviewMutation(graphene.Mutation):
         bookmarked = graphene.Boolean()
 
     # The class attributes define the response of the mutation
-    review = graphene.Field(Review)
+    review = graphene.NonNull(types.Review)
 
     @classmethod
     @login_required
