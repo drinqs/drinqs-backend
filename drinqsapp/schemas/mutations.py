@@ -15,7 +15,6 @@ class UserMutation(graphene.Mutation):
         first_name = graphene.String()
         last_name = graphene.String()
 
-
     # The class attributes define the response of the mutation
     user = graphene.Field(User)
     errors = graphene.List(Error)
@@ -77,11 +76,3 @@ class Mutation(graphene.ObjectType):
     create_user = UserMutation.Field()
 
     review = ReviewMutation.Field()
-
-    # create user
-
-    # like cocktail (drinq it)
-
-    # reviews
-
-    # settings
