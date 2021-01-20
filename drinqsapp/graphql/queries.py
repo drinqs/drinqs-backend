@@ -1,6 +1,5 @@
 
-from graphene_django import DjangoObjectType
-from graphene_django.filter import DjangoFilterConnectionField
+from graphene_django import DjangoObjectType, DjangoConnectionField
 from graphql_jwt.decorators import login_required, staff_member_required
 import graphene
 
@@ -41,6 +40,11 @@ class Query(graphene.ObjectType):
     def resolve_cocktail(self, info, **args):
         return models.Cocktail.objects.get(slug=args['slug'])
 
+    recommended_cocktails = graphene.relay.ConnectionField(types.CocktailConnection)
+    @login_required
+    def resolve_recommended_cocktails(self, info, **args):
+        return models.Cocktail.objects.all()
+
     next_cocktail = graphene.Field(types.Cocktail)
     @login_required
     def resolve_next_cocktail(self, info):
@@ -75,11 +79,3 @@ class Query(graphene.ObjectType):
             del args['cocktail']
 
         return models.Review.objects.filter(**args)
-
-    recommended_cocktails = DjangoFilterConnectionField(types.Cocktail)
-    # @login_required
-    # def resolve_recommended_cocktails(root, info, **args):
-    #     print(args)
-    #     cocktails = models.Cocktail.objects.all()
-    #     print(cocktails)
-    #     return cocktails
