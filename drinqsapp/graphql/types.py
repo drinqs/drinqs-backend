@@ -31,6 +31,7 @@ class Cocktail(DjangoObjectType):
     alcoholic = graphene.Boolean(required=False)
     def resolve_alcoholic(self, info):
         value_map = {
+            0: None,
             1: True,
             2: False,
         }
