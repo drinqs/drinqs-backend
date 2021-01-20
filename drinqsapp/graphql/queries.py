@@ -32,7 +32,7 @@ class Query(graphene.ObjectType):
         try:
             return models.Cocktail.objects.filter(**args)
         except models.Cocktail.DoesNotExist:
-            return None
+            return []
 
     cocktail = graphene.Field(types.Cocktail, slug=graphene.NonNull(graphene.String))
     @login_required
