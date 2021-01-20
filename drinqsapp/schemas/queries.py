@@ -8,8 +8,7 @@ from graphql_jwt.decorators import login_required, staff_member_required
 import drinqsapp.models as models
 from django.contrib.auth import models as authmodels
 
-# TODO:
-# Remove if recommender is implemented and next_cocktail should not deliver random
+# TODO: Remove if recommender is implemented and next_cocktail should not deliver random
 import random
 
 class CocktailIngredient(DjangoObjectType):
@@ -59,7 +58,7 @@ class IngredientTag(DjangoObjectType):
 class Review(DjangoObjectType):
     class Meta:
         model = models.Review
-        fields = ('id', 'user', 'cocktail', 'liked')
+        fields = ('id', 'user', 'cocktail', 'liked', 'bookmarked')
 
 class User(DjangoObjectType):
     class Meta:
@@ -74,7 +73,7 @@ class Query(graphene.ObjectType):
     cocktails = graphene.List(Cocktail, alcoholic=graphene.Boolean(), category=graphene.String(), glass=graphene.String())
     next_cocktail = graphene.Field(Cocktail)
     me = graphene.Field(User)
-    reviews = graphene.List(Review, username=graphene.String(), cocktail=graphene.String(), likes=graphene.Boolean())
+    reviews = graphene.List(Review, username=graphene.String(), cocktail=graphene.String(), liked=graphene.Boolean())
 
     @login_required
     def resolve_cocktails(self, info, **args):
