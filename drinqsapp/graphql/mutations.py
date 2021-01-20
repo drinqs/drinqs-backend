@@ -52,8 +52,8 @@ class ProfileMutation(graphene.Mutation):
         last_name = graphene.String()
 
     # The class attributes define the response of the mutation
-    user = graphene.Field(User)
-    errors = graphene.List(Error)
+    user = graphene.Field(types.User)
+    errors = graphene.List(types.Error)
 
     @classmethod
     @login_required
