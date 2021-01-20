@@ -37,6 +37,15 @@ class Cocktail(DjangoObjectType):
     def resolve_cocktail_ingredients(self, info):
         return models.CocktailIngredient.objects.filter(cocktail_id=self.id)
 
+    like_ratio = graphene.Float()
+    def resolve_like_ratio(self, info):
+        total_review_count = models.Review.objects.filter(cocktail_id=self.id).exclude(liked=None).count()
+        if total_review_count == 0:
+            return None
+
+        positive_review_count = models.Review.objects.filter(cocktail_id=self.id, liked=True).count()
+        return float(positive_review_count / total_review_count)
+
     review = graphene.Field(Review)
     def resolve_review(self, info):
         user_id = info.context.user.id
