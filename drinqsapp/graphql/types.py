@@ -23,7 +23,8 @@ class CocktailIngredient(DjangoObjectType):
 class Cocktail(DjangoObjectType):
     class Meta:
         model = models.Cocktail
-        fields = ('id', 'name', 'slug', 'category', 'glass', 'ingredients', 'preparation', 'thumbnail_url', 'reviews')
+        filter_fields = ('id', 'name', 'slug', 'category', 'glass', 'ingredients', 'preparation', 'thumbnail_url', 'reviews')
+        interfaces = (graphene.relay.Node, )
 
     alcoholic = graphene.Boolean(required=False)
     def resolve_alcoholic(self, info):

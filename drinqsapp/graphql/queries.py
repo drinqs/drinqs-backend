@@ -1,5 +1,6 @@
 
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from graphql_jwt.decorators import login_required, staff_member_required
 import graphene
 
@@ -74,3 +75,11 @@ class Query(graphene.ObjectType):
             del args['cocktail']
 
         return models.Review.objects.filter(**args)
+
+    recommended_cocktails = DjangoFilterConnectionField(types.Cocktail)
+    # @login_required
+    # def resolve_recommended_cocktails(root, info, **args):
+    #     print(args)
+    #     cocktails = models.Cocktail.objects.all()
+    #     print(cocktails)
+    #     return cocktails
