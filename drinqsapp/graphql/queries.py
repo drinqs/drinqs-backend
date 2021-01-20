@@ -34,6 +34,11 @@ class Query(graphene.ObjectType):
         except models.Cocktail.DoesNotExist:
             return None
 
+    cocktail = graphene.Field(types.Cocktail, slug=graphene.NonNull(graphene.String))
+    @login_required
+    def resolve_cocktail(self, info, **args):
+        return models.Cocktail.objects.get(slug=args['slug'])
+
     next_cocktail = graphene.Field(types.Cocktail)
     @login_required
     def resolve_next_cocktail(self, info):
