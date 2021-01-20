@@ -17,8 +17,8 @@ class UserMutation(graphene.Mutation):
         last_name = graphene.String()
 
     # The class attributes define the response of the mutation
-    user = graphene.Field(types.User)
-    errors = graphene.List(types.Error)
+    user = graphene.NonNull(types.User)
+    errors = graphene.List(graphene.NonNull(types.Error), required=True)
 
     @classmethod
     def mutate(cls, root, info, username, email, password, first_name, last_name):
@@ -51,7 +51,7 @@ class ReviewMutation(graphene.Mutation):
         bookmarked = graphene.Boolean()
 
     # The class attributes define the response of the mutation
-    review = graphene.Field(types.Review)
+    review = graphene.NonNull(types.Review)
 
     @classmethod
     @login_required

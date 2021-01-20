@@ -14,7 +14,7 @@ class CocktailIngredient(DjangoObjectType):
         model = models.CocktailIngredient
         fields = ('id', 'amount', 'position', 'cocktail', 'ingredient')
 
-    measurement = graphene.String()
+    measurement = graphene.NonNull(graphene.String)
     def resolve_measurement(self, info):
         value_map = { k: v for k, v in models.CocktailIngredient.MEASUREMENT_CHOICES }
 
@@ -33,7 +33,7 @@ class Cocktail(DjangoObjectType):
         }
         return value_map[self.alcoholic]
 
-    cocktail_ingredients = graphene.List(CocktailIngredient)
+    cocktail_ingredients = graphene.List(graphene.NonNull(CocktailIngredient), required=True)
     def resolve_cocktail_ingredients(self, info):
         return models.CocktailIngredient.objects.filter(cocktail_id=self.id)
 

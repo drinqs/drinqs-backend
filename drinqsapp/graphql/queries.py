@@ -12,7 +12,8 @@ from django.contrib.auth import models as authmodels
 
 class Query(graphene.ObjectType):
     cocktails = graphene.List(
-        types.Cocktail,
+        graphene.NonNull(types.Cocktail),
+        required=True,
         alcoholic=graphene.Boolean(),
         category=graphene.String(),
         glass=graphene.String(),
@@ -34,7 +35,7 @@ class Query(graphene.ObjectType):
         except models.Cocktail.DoesNotExist:
             return []
 
-    cocktail = graphene.Field(types.Cocktail, slug=graphene.NonNull(graphene.String))
+    cocktail = graphene.NonNull(types.Cocktail, slug=graphene.NonNull(graphene.String))
     @login_required
     def resolve_cocktail(self, info, **args):
         return models.Cocktail.objects.get(slug=args['slug'])
@@ -50,13 +51,14 @@ class Query(graphene.ObjectType):
         except models.Cocktail.DoesNotExist:
             return None
 
-    me = graphene.Field(types.User)
+    me = graphene.NonNull(types.User)
     @login_required
     def resolve_me(self, info):
         return authmodels.User.objects.get(pk=info.context.user.id)
 
     reviews = graphene.List(
-        types.Review,
+        graphene.NonNull(types.Review),
+        required=True,
         username=graphene.String(),
         cocktail=graphene.String(),
         liked=graphene.Boolean(),
