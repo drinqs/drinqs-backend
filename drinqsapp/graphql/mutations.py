@@ -53,7 +53,7 @@ class ProfileMutation(graphene.Mutation):
 
     # The class attributes define the response of the mutation
     user = graphene.NonNull(types.User)
-    errors = graphene.NonNull(types.Error)
+    errors = graphene.List(graphene.NonNull(types.Error), required=True)
 
     @classmethod
     @login_required
