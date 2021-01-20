@@ -45,8 +45,8 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_next_cocktail(self, info):
         try:
-            cocktail_ids = models.Cocktail.objects.filter().values('id')
-            cocktail_id = random.choice(cocktail_ids)["id"]
+            cocktail_ids = models.Cocktail.objects.values_list('id', flat=True)
+            cocktail_id = random.choice(cocktail_ids)
 
             return models.Cocktail.objects.get(pk=cocktail_id)
         except models.Cocktail.DoesNotExist:
