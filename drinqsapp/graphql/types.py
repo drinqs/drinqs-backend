@@ -23,7 +23,7 @@ class CocktailIngredient(DjangoObjectType):
 class Cocktail(DjangoObjectType):
     class Meta:
         model = models.Cocktail
-        fields = ('id', 'name', 'slug', 'category', 'glass', 'ingredients', 'preparation', 'thumbnail_url', 'reviews')
+        fields = ('id', 'name', 'slug', 'category', 'glass', 'ingredients', 'preparation', 'thumbnail_url')
 
     alcoholic = graphene.Boolean(required=False)
     def resolve_alcoholic(self, info):
@@ -37,10 +37,22 @@ class Cocktail(DjangoObjectType):
     def resolve_cocktail_ingredients(self, info):
         return models.CocktailIngredient.objects.filter(cocktail_id=self.id)
 
+    like_ratio = graphene.Float()
+    def resolve_like_ratio(self, info):
+        total_review_count = models.Review.objects.filter(cocktail_id=self.id).exclude(liked=None).count()
+        if total_review_count == 0:
+            return None
+
+        positive_review_count = models.Review.objects.filter(cocktail_id=self.id, liked=True).count()
+        return float(positive_review_count / total_review_count)
+
     review = graphene.Field(Review)
     def resolve_review(self, info):
         user_id = info.context.user.id
-        return models.Review.objects.filter(cocktail_id=self.id, user_id=user_id)
+        try:
+            return models.Review.objects.get(cocktail_id=self.id, user_id=user_id)
+        except models.Review.DoesNotExist:
+            return None
 
 class Error(graphene.ObjectType):
     key = graphene.NonNull(graphene.String)

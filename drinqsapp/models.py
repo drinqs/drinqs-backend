@@ -47,7 +47,7 @@ class Cocktail(models.Model):
     preparation = models.TextField(blank=True, null=True)
     thumbnail_url = models.CharField(max_length=512, blank=True, null=True)
     ingredients = models.ManyToManyField(Ingredient, through='CocktailIngredient')
-    reviews = models.ManyToManyField(authmodels.User, through='Review')
+    reviewers = models.ManyToManyField(authmodels.User, through='Review')
     glass = models.ForeignKey(Glass, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
