@@ -1,5 +1,4 @@
 import graphene
-import graphql_jwt
 from graphql_jwt.decorators import login_required, staff_member_required
 
 import drinqsapp.graphql.types as types
@@ -43,6 +42,53 @@ class UserMutation(graphene.Mutation):
         # Notice we return an instance of this mutation
         return UserMutation(user=user, errors=errors)
 
+class ProfileMutation(graphene.Mutation):
+    class Arguments:
+        # The input arguments for this mutation
+        username = graphene.String()
+        email = graphene.String()
+        password = graphene.String()
+        first_name = graphene.String()
+        last_name = graphene.String()
+
+    # The class attributes define the response of the mutation
+    user = graphene.NonNull(types.User)
+    errors = graphene.List(graphene.NonNull(types.Error), required=True)
+
+    @classmethod
+    @login_required
+    def mutate(cls, root, info, **kwargs):
+
+        errors = []
+        user = info.context.user
+
+        username = kwargs.get('username', None)
+        if username:
+            if authmodels.User.objects.filter(username=username).exclude(id=user.id).count() > 0:
+                errors.append({
+                    'key': 'username',
+                    'message': 'Username is already taken'
+                })
+
+        email = kwargs.get('email', None)
+        if email:
+            if authmodels.User.objects.filter(email=email).exclude(id=user.id).count() > 0:
+                errors.append({
+                    'key': 'email',
+                    'message': 'Email is already taken'
+                })
+
+        if not errors:
+            user.password = kwargs.get('password', user.password)
+            user.username = kwargs.get('username', user.username)
+            user.email = kwargs.get('email', user.email)
+            user.first_name = kwargs.get('first_name', user.first_name)
+            user.last_name = kwargs.get('last_name', user.last_name)
+            user.save()
+
+        # Notice we return an instance of this mutation
+        return ProfileMutation(user=user, errors=errors)
+
 class ReviewMutation(graphene.Mutation):
     class Arguments:
         # The input arguments for this mutation
@@ -69,11 +115,3 @@ class ReviewMutation(graphene.Mutation):
 
         # Notice we return an instance of this mutation
         return ReviewMutation(review=review)
-
-class Mutation(graphene.ObjectType):
-    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
-    refresh_token = graphql_jwt.Refresh.Field()
-
-    create_user = UserMutation.Field()
-
-    review = ReviewMutation.Field()

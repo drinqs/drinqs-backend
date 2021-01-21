@@ -1,11 +1,11 @@
 import graphene
-import drinqsapp.graphql.queries
-import drinqsapp.graphql.mutations
+import drinqsapp.graphql.query
+import drinqsapp.graphql.mutation
 
-class Query(drinqsapp.graphql.queries.Query, graphene.ObjectType):
+class Query(drinqsapp.graphql.query.Query, graphene.ObjectType):
     pass
 
-class Mutation(drinqsapp.graphql.mutations.Mutation, graphene.ObjectType):
+class Mutation(drinqsapp.graphql.mutation.Mutation, graphene.ObjectType):
     pass
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
