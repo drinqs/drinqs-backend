@@ -23,11 +23,15 @@ class CocktailIngredient(DjangoObjectType):
 class Cocktail(DjangoObjectType):
     class Meta:
         model = models.Cocktail
-        fields = ('id', 'name', 'slug', 'category', 'glass', 'ingredients', 'preparation', 'thumbnail_url')
+        fields = ('name', 'slug', 'category', 'glass', 'ingredients', 'preparation', 'thumbnail_url')
+        interfaces = (graphene.relay.Node,)
+
+    id = graphene.ID(source='pk', required=True)
 
     alcoholic = graphene.Boolean(required=False)
     def resolve_alcoholic(self, info):
         value_map = {
+            0: None,
             1: True,
             2: False,
         }
@@ -53,6 +57,14 @@ class Cocktail(DjangoObjectType):
             return models.Review.objects.get(cocktail_id=self.id, user_id=user_id)
         except models.Review.DoesNotExist:
             return None
+
+class CocktailConnection(graphene.relay.Connection):
+    class Meta:
+        node = Cocktail
+
+    cocktails = graphene.List(graphene.NonNull(Cocktail), required=True)
+    def resolve_cocktails(self, info):
+        return map(lambda edge: edge.node, self.edges)
 
 class Error(graphene.ObjectType):
     key = graphene.NonNull(graphene.String)

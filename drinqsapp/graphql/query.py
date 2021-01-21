@@ -1,5 +1,5 @@
 
-from graphene_django import DjangoObjectType
+from graphene_django import DjangoObjectType, DjangoConnectionField
 from graphql_jwt.decorators import login_required, staff_member_required
 import graphene
 
@@ -40,12 +40,17 @@ class Query(graphene.ObjectType):
     def resolve_cocktail(self, info, **args):
         return models.Cocktail.objects.get(slug=args['slug'])
 
+    recommended_cocktails = graphene.relay.ConnectionField(types.CocktailConnection)
+    @login_required
+    def resolve_recommended_cocktails(self, info, **args):
+        return models.Cocktail.objects.all()
+
     next_cocktail = graphene.Field(types.Cocktail)
     @login_required
     def resolve_next_cocktail(self, info):
         try:
-            cocktail_ids = models.Cocktail.objects.filter().values('id')
-            cocktail_id = random.choice(cocktail_ids)["id"]
+            cocktail_ids = models.Cocktail.objects.values_list('id', flat=True)
+            cocktail_id = random.choice(cocktail_ids)
 
             return models.Cocktail.objects.get(pk=cocktail_id)
         except models.Cocktail.DoesNotExist:
