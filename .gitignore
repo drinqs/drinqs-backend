@@ -147,7 +147,3 @@ cython_debug/
 ################################################################################
 
 docker-compose.user.yml
-
-# Cache
-data
-drinqsapp/loaddata.py
