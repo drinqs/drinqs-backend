@@ -55,6 +55,11 @@ class Query(graphene.ObjectType):
         except models.Cocktail.DoesNotExist:
             return None
 
+    bookmarks = graphene.relay.ConnectionField(types.CocktailConnection)
+    @login_required
+    def resolve_bookmarks(self, info):
+        return info.context.user.bookmarks()
+
     me = graphene.NonNull(types.User)
     @login_required
     def resolve_me(self, info):

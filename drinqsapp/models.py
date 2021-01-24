@@ -10,7 +10,15 @@ from autoslug import AutoSlugField
 
 # User model (E)
 class User(AbstractUser):
-    pass
+    def bookmarks(self):
+        return Cocktail.objects.filter(
+            id__in=Subquery(
+                Review.objects.filter(
+                    user_id=self.id,
+                    bookmarked=True,
+                ).values_list('cocktail_id', flat=True)
+            ),
+        )
 
 # (E) Glass
 class Glass(models.Model):
