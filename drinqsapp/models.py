@@ -54,7 +54,7 @@ class Cocktail(models.Model):
     glass = models.ForeignKey(Glass, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.slug
 
 # (R) CocktailIngredient: Cocktail-Ingredient
 class CocktailIngredient(models.Model):
