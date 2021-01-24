@@ -69,9 +69,9 @@ class CocktailIngredient(models.Model):
     class Meta:
         constraints = [
             # Ensure there is only one entry per cocktail-ingredient combination
-            UniqueConstraint(fields=['cocktail', 'ingredient'], name='unique_cocktailingredients'),
+            #UniqueConstraint(fields=['cocktail', 'ingredient'], name='unique_cocktailingredients'),
             # Ensure no cocktail has multiple ingredients in the same position
-            UniqueConstraint(fields=['cocktail', 'position'], name='unique_cocktailposition')
+            #UniqueConstraint(fields=['cocktail', 'position'], name='unique_cocktailposition')
         ]
 
     measurement = models.CharField(max_length=128, blank=True, null=True)
