@@ -3,8 +3,6 @@ from graphql_jwt.decorators import login_required, staff_member_required
 
 import drinqsapp.graphql.types as types
 import drinqsapp.models as models
-from django.contrib.auth import models as authmodels
-
 
 class UserMutation(graphene.Mutation):
     class Arguments:
@@ -23,18 +21,18 @@ class UserMutation(graphene.Mutation):
     def mutate(cls, root, info, username, email, password, first_name, last_name):
         errors = []
         user = None
-        if authmodels.User.objects.filter(username=username).count() > 0:
+        if models.User.objects.filter(username=username).count() > 0:
             errors.append({
                 'key': 'username',
                 'message': 'Username is already taken'
             })
-        if authmodels.User.objects.filter(email=email).count() > 0:
+        if models.User.objects.filter(email=email).count() > 0:
             errors.append({
                 'key': 'email',
                 'message': 'Email is already taken'
             })
         if not errors:
-            user = authmodels.User.objects.create_user(username, email, password)
+            user = models.User.objects.create_user(username, email, password)
             user.first_name = first_name
             user.last_name = last_name
             user.save()
@@ -64,7 +62,7 @@ class ProfileMutation(graphene.Mutation):
 
         username = kwargs.get('username', None)
         if username:
-            if authmodels.User.objects.filter(username=username).exclude(id=user.id).count() > 0:
+            if models.User.objects.filter(username=username).exclude(id=user.id).count() > 0:
                 errors.append({
                     'key': 'username',
                     'message': 'Username is already taken'
@@ -72,7 +70,7 @@ class ProfileMutation(graphene.Mutation):
 
         email = kwargs.get('email', None)
         if email:
-            if authmodels.User.objects.filter(email=email).exclude(id=user.id).count() > 0:
+            if models.User.objects.filter(email=email).exclude(id=user.id).count() > 0:
                 errors.append({
                     'key': 'email',
                     'message': 'Email is already taken'

@@ -1,13 +1,24 @@
 from django.db import models
-from django.db.models import UniqueConstraint
-from django.contrib.auth import models as authmodels
+from django.db.models import UniqueConstraint, Subquery
+from django.contrib.auth.models import AbstractUser
 
 from autoslug import AutoSlugField
 
 # Models for drinqs application.
 # (E) Entity model
 # (R) Relationship model: A-B
-# User model (E) inherited from django.contrib.auth.models
+
+# User model (E)
+class User(AbstractUser):
+    def bookmarks(self):
+        return Cocktail.objects.filter(
+            id__in=Subquery(
+                Review.objects.filter(
+                    user_id=self.id,
+                    bookmarked=True,
+                ).values_list('cocktail_id', flat=True)
+            ),
+        )
 
 # (E) Glass
 class Glass(models.Model):
@@ -19,7 +30,7 @@ class Glass(models.Model):
 # (E) Ingredient Tag
 class IngredientTag(models.Model):
     name = models.CharField(max_length=128, unique=True)
-    users = models.ManyToManyField(authmodels.User, blank=True)
+    users = models.ManyToManyField(User, blank=True)
 
     def __str__(self):
         return self.name
@@ -47,23 +58,14 @@ class Cocktail(models.Model):
     preparation = models.TextField(blank=True, null=True)
     thumbnail_url = models.CharField(max_length=512, blank=True, null=True)
     ingredients = models.ManyToManyField(Ingredient, through='CocktailIngredient')
-    reviewers = models.ManyToManyField(authmodels.User, through='Review')
+    reviewers = models.ManyToManyField(User, through='Review')
     glass = models.ForeignKey(Glass, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.slug
 
 # (R) CocktailIngredient: Cocktail-Ingredient
 class CocktailIngredient(models.Model):
-    MEASUREMENT_CHOICES = (
-        (0, 'ml'),
-        (1, 'oz'),
-        (2, 'cup'),
-        (3, 'tsp'),
-        (4, 'Tbsp'),
-        (5, 'package'),
-    )
-
     class Meta:
         constraints = [
             # Ensure there is only one entry per cocktail-ingredient combination
@@ -72,8 +74,7 @@ class CocktailIngredient(models.Model):
             UniqueConstraint(fields=['cocktail', 'position'], name='unique_cocktailposition')
         ]
 
-    measurement = models.IntegerField(choices=MEASUREMENT_CHOICES)
-    amount = models.FloatField()
+    measurement = models.CharField(max_length=128)
     position = models.SmallIntegerField(blank=True, null=True)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
@@ -89,7 +90,7 @@ class Review(models.Model):
             UniqueConstraint(fields=['user', 'cocktail'], name='unique_review')
         ]
 
-    user = models.ForeignKey(authmodels.User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     liked = models.BooleanField(default=False, null=True)
     bookmarked = models.BooleanField(default=False, null=True)

@@ -8,7 +8,6 @@ import random
 
 import drinqsapp.graphql.types as types
 import drinqsapp.models as models
-from django.contrib.auth import models as authmodels
 
 class Query(graphene.ObjectType):
     cocktails = graphene.List(
@@ -56,10 +55,15 @@ class Query(graphene.ObjectType):
         except models.Cocktail.DoesNotExist:
             return None
 
+    bookmarks = graphene.relay.ConnectionField(types.CocktailConnection)
+    @login_required
+    def resolve_bookmarks(self, info):
+        return info.context.user.bookmarks()
+
     me = graphene.NonNull(types.User)
     @login_required
     def resolve_me(self, info):
-        return authmodels.User.objects.get(pk=info.context.user.id)
+        return models.User.objects.get(pk=info.context.user.id)
 
     reviews = graphene.List(
         graphene.NonNull(types.Review),
@@ -71,7 +75,7 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_reviews(self, info, **args):
         if args.get('username'):
-            args['user_id'] = authmodels.User.objects.get(username=args.get('username')).id
+            args['user_id'] = models.User.objects.get(username=args.get('username')).id
             del args['username']
 
         if args.get('cocktail'):

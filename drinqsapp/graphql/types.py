@@ -2,7 +2,6 @@ from graphene_django import DjangoObjectType
 import graphene
 
 import drinqsapp.models as models
-from django.contrib.auth import models as authmodels
 
 class Review(DjangoObjectType):
     class Meta:
@@ -12,13 +11,7 @@ class Review(DjangoObjectType):
 class CocktailIngredient(DjangoObjectType):
     class Meta:
         model = models.CocktailIngredient
-        fields = ('id', 'amount', 'position', 'cocktail', 'ingredient')
-
-    measurement = graphene.NonNull(graphene.String)
-    def resolve_measurement(self, info):
-        value_map = { k: v for k, v in models.CocktailIngredient.MEASUREMENT_CHOICES }
-
-        return value_map[self.measurement]
+        fields = ('id', 'measurement', 'position', 'cocktail', 'ingredient')
 
 class Cocktail(DjangoObjectType):
     class Meta:
@@ -87,5 +80,5 @@ class IngredientTag(DjangoObjectType):
 
 class User(DjangoObjectType):
     class Meta:
-        model = authmodels.User
+        model = models.User
         fields = ('id', 'username', 'first_name', 'last_name', 'email')
