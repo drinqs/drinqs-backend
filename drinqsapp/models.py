@@ -58,15 +58,6 @@ class Cocktail(models.Model):
 
 # (R) CocktailIngredient: Cocktail-Ingredient
 class CocktailIngredient(models.Model):
-    MEASUREMENT_CHOICES = (
-        (0, 'ml'),
-        (1, 'oz'),
-        (2, 'cup'),
-        (3, 'tsp'),
-        (4, 'Tbsp'),
-        (5, 'package'),
-    )
-
     class Meta:
         constraints = [
             # Ensure there is only one entry per cocktail-ingredient combination
@@ -75,8 +66,7 @@ class CocktailIngredient(models.Model):
             UniqueConstraint(fields=['cocktail', 'position'], name='unique_cocktailposition')
         ]
 
-    measurement = models.IntegerField(choices=MEASUREMENT_CHOICES)
-    amount = models.FloatField()
+    measurement = models.CharField(max_length=128)
     position = models.SmallIntegerField(blank=True, null=True)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)

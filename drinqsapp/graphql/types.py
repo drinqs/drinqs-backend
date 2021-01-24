@@ -11,13 +11,7 @@ class Review(DjangoObjectType):
 class CocktailIngredient(DjangoObjectType):
     class Meta:
         model = models.CocktailIngredient
-        fields = ('id', 'amount', 'position', 'cocktail', 'ingredient')
-
-    measurement = graphene.NonNull(graphene.String)
-    def resolve_measurement(self, info):
-        value_map = { k: v for k, v in models.CocktailIngredient.MEASUREMENT_CHOICES }
-
-        return value_map[self.measurement]
+        fields = ('id', 'measurement', 'position', 'cocktail', 'ingredient')
 
 class Cocktail(DjangoObjectType):
     class Meta:
