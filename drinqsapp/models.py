@@ -74,7 +74,7 @@ class CocktailIngredient(models.Model):
             UniqueConstraint(fields=['cocktail', 'position'], name='unique_cocktailposition')
         ]
 
-    measurement = models.CharField(max_length=128)
+    measurement = models.CharField(max_length=128, blank=True, null=True)
     position = models.SmallIntegerField(blank=True, null=True)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
