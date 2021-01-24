@@ -2,7 +2,6 @@ from graphene_django import DjangoObjectType
 import graphene
 
 import drinqsapp.models as models
-from django.contrib.auth import models as authmodels
 
 class Review(DjangoObjectType):
     class Meta:
@@ -87,5 +86,5 @@ class IngredientTag(DjangoObjectType):
 
 class User(DjangoObjectType):
     class Meta:
-        model = authmodels.User
+        model = models.User
         fields = ('id', 'username', 'first_name', 'last_name', 'email')

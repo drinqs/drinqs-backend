@@ -111,6 +111,10 @@ DATABASES = {
 }
 
 
+# User Model
+AUTH_USER_MODEL = 'drinqsapp.User'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
