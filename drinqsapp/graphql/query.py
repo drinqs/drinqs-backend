@@ -10,29 +10,10 @@ import drinqsapp.graphql.types as types
 import drinqsapp.models as models
 
 class Query(graphene.ObjectType):
-    cocktails = graphene.List(
-        graphene.NonNull(types.Cocktail),
-        required=True,
-        alcoholic=graphene.Boolean(),
-        category=graphene.String(),
-        glass=graphene.String(),
-    )
+    cocktails = graphene.relay.ConnectionField(types.CocktailConnection)
     @login_required
     def resolve_cocktails(self, info, **args):
-        if args.get('glass'):
-            args['glass'] = models.Glass.objects.get(name=args.get('glass')).id
-        if args.get('alcoholic'):
-            if args['alcoholic'] == None:
-                args['alcoholic'] = 0
-            elif args['alcoholic'] == True:
-                args['alcoholic'] = 1
-            else:
-                args['alcoholic'] = 2
-
-        try:
-            return models.Cocktail.objects.filter(**args)
-        except models.Cocktail.DoesNotExist:
-            return []
+        return models.Cocktail.objects.all()
 
     cocktail = graphene.NonNull(types.Cocktail, slug=graphene.NonNull(graphene.String))
     @login_required
