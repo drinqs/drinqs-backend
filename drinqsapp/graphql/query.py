@@ -57,7 +57,7 @@ class Query(graphene.ObjectType):
 
     bookmarks = graphene.relay.ConnectionField(types.CocktailConnection)
     @login_required
-    def resolve_bookmarks(self, info):
+    def resolve_bookmarks(self, info, **args):
         return info.context.user.bookmarks()
 
     me = graphene.NonNull(types.User)
