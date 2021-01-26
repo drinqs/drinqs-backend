@@ -23,11 +23,13 @@ class Query(graphene.ObjectType):
     recommended_cocktails = graphene.relay.ConnectionField(types.CocktailConnection)
     @login_required
     def resolve_recommended_cocktails(self, info, **args):
+        # TODO: replace with real recommender query
         return models.Cocktail.objects.all()
 
     next_cocktail = graphene.Field(types.Cocktail)
     @login_required
     def resolve_next_cocktail(self, info):
+        # TODO: replace with real recommender query
         try:
             cocktail_ids = models.Cocktail.objects.values_list('id', flat=True)
             cocktail_id = random.choice(cocktail_ids)
@@ -45,22 +47,3 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_me(self, info):
         return models.User.objects.get(pk=info.context.user.id)
-
-    reviews = graphene.List(
-        graphene.NonNull(types.Review),
-        required=True,
-        username=graphene.String(),
-        cocktail=graphene.String(),
-        liked=graphene.Boolean(),
-    )
-    @login_required
-    def resolve_reviews(self, info, **args):
-        if args.get('username'):
-            args['user_id'] = models.User.objects.get(username=args.get('username')).id
-            del args['username']
-
-        if args.get('cocktail'):
-            args['cocktail_id'] = models.Cocktail.objects.get(name=args.get('cocktail')).id
-            del args['cocktail']
-
-        return models.Review.objects.filter(**args)
