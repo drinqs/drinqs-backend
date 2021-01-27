@@ -77,7 +77,7 @@ class ProfileMutation(graphene.Mutation):
                 })
 
         if not errors:
-            user.password = kwargs.get('password', user.password)
+            user.set_password(kwargs.get('password', user.password))
             user.username = kwargs.get('username', user.username)
             user.email = kwargs.get('email', user.email)
             user.first_name = kwargs.get('first_name', user.first_name)
