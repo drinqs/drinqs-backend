@@ -1,8 +1,9 @@
+from autoslug import AutoSlugField
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint, Subquery
-from django.contrib.auth.models import AbstractUser
 
-from autoslug import AutoSlugField
+from drinqsapp.managers import CocktailManager
 
 # Models for drinqs application.
 # (E) Entity model
@@ -51,6 +52,8 @@ class Cocktail(models.Model):
         (2, 'non alcoholic'),
     )
 
+    objects = CocktailManager()
+
     name = models.CharField(max_length=128, unique=True)
     slug = AutoSlugField(populate_from='name', max_length=128, always_update=True, sep='--', unique=True)
     alcoholic = models.IntegerField(blank=True, null=True, choices=ALCOHOLIC_CHOICES)
@@ -92,8 +95,8 @@ class Review(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
-    liked = models.BooleanField(default=False, null=True)
-    bookmarked = models.BooleanField(default=False, null=True)
+    liked = models.BooleanField(default=None, null=True)
+    bookmarked = models.BooleanField(default=None, null=True)
 
     def __str__(self):
         return f"{self.user}-{self.cocktail}"

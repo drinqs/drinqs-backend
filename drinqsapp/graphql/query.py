@@ -15,6 +15,15 @@ class Query(graphene.ObjectType):
     def resolve_cocktails(self, info, **args):
         return models.Cocktail.objects.all()
 
+    search = graphene.relay.ConnectionField(types.CocktailConnection, search_term=graphene.String())
+    @login_required
+    def resolve_search(self, info, **args):
+        search_term = args.get('search_term', '')
+        if args.get('search_term'):
+            del args['search_term']
+
+        return models.Cocktail.objects.search(search_term)
+
     cocktail = graphene.NonNull(types.Cocktail, slug=graphene.NonNull(graphene.String))
     @login_required
     def resolve_cocktail(self, info, **args):
