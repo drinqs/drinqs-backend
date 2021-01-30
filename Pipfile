@@ -17,8 +17,9 @@ whitenoise = "*"
 django-graphql-jwt = "*"
 django-cors-headers = "*"
 pyjwt = "~=1.7"
-django-autoslug="*"
-requests="*"
+django-autoslug = "*"
+requests = "*"
+ptvsd = "*"
 
 [dev-packages]
 
