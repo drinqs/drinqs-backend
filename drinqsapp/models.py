@@ -1,8 +1,9 @@
+from autoslug import AutoSlugField
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint, Subquery
-from django.contrib.auth.models import AbstractUser
 
-from autoslug import AutoSlugField
+from drinqsapp.managers import CocktailManager
 
 # Models for drinqs application.
 # (E) Entity model
@@ -50,6 +51,8 @@ class Cocktail(models.Model):
         (1, 'alcoholic'),
         (2, 'non alcoholic'),
     )
+
+    objects = CocktailManager()
 
     name = models.CharField(max_length=128, unique=True)
     slug = AutoSlugField(populate_from='name', max_length=128, always_update=True, sep='--', unique=True)
