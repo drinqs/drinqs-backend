@@ -84,6 +84,7 @@ ROOT_URLCONF = 'drinqsapp.urls'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://www.drinqs.de',
+    'https://drinqs.de'
 ]
 
 TEMPLATES = [
