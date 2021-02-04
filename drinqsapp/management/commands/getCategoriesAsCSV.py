@@ -36,7 +36,7 @@ class Command(BaseCommand, ABC):
 
         drinksRegexFilter = "[C|c]ompanies|[B|b]rewer[i|y]|[P|p]ubs|continent|country|region|brewers|" \
                     "industry|culture|organizations|[P|p]eople|logos|[W|w]ineries|industr|establishment|" \
-                    "[H|h]ot springs|[G|g]eographical|science|[H|h]istory"
+                    "[H|h]ot springs|[G|g]eographical|science|[H|h]istory|Cocktails"
 
         foodRegexFilter = "[C|c]ompanies|[B|b]rewer[i|y]|[P|p]ubs|continent|country|region|brewers|" \
                         "industry|culture|organizations|[P|p]eople|logos|[W|w]ineries|industr|establishment|" \

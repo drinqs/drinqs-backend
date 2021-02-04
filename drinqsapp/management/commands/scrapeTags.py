@@ -47,18 +47,20 @@ def getAllTags(self):
                 for page in data["query"]["pages"]:
                     print(ingredient)
                     if page != "-1":
-                        for category in data["query"]["pages"][page]["categories"]:
-                            print(category["title"])
-                            if category["title"] in drinkcategoriesList.values \
-                                or category["title"] in foodcategoriesList.values:
-                                print("is in list!")
-                                c = category["title"].replace("Category:","")
-                                if len(c) < 127:
-                                    ingredient.ingredient_tags.add(IngredientTag.objects.get_or_create(name=c)[0])
-                                    print(c + " --- saved into DB")
+                        if "categories" in data["query"]["pages"][page]:
+                            for category in data["query"]["pages"][page]["categories"]:
+                                print(category["title"])
+                                if category["title"] in drinkcategoriesList.values \
+                                    or category["title"] in foodcategoriesList.values:
+                                    print("is in list!")
+                                    c = category["title"].replace("Category:","")
+                                    if len(c) < 127:
+                                        ingredient.ingredient_tags.add(IngredientTag.objects.get_or_create(name=c)[0])
+                                        print(c + " --- saved into DB")
 
         else:
             splitString = ingredient.name.split()
+            searchSplit = []
             print('Try to search for SPLIT ingredient...' + str(splitString))
             if len(splitString) > 2:
                 tempString = splitString.copy()
@@ -67,10 +69,10 @@ def getAllTags(self):
                 tempString = splitString.copy()
                 del tempString[-1]
                 withoutLast = ' '.join(tempString)
-                splitString.append(withoutFirst)
-                splitString.append(withoutLast)
+                searchSplit.append(withoutFirst)
+                searchSplit.append(withoutLast)
 
-            for split in splitString:
+            for split in searchSplit:
                 print('split:' + split)
                 params = dict(
                     format='json',
@@ -99,30 +101,22 @@ def getAllTags(self):
                         for page in data["query"]["pages"]:
                             print(ingredient)
                             if page != "-1":
-                                for category in data["query"]["pages"][page]["categories"]:
-                                    print(category["title"])
-                                    if category["title"] in drinkcategoriesList.values or category[
-                                        "title"] in foodcategoriesList.values:
-                                        print("is in list!")
-                                        c = category["title"].replace("Category:", "")
-                                        if len(c) < 127:
-                                            ingredient.ingredient_tags.add(
-                                                IngredientTag.objects.get_or_create(name=c)[0])
-                                            print(c + " --- saved into DB")
+                                if "categories" in data["query"]["pages"][page]:
+                                    for category in data["query"]["pages"][page]["categories"]:
+                                        print(category["title"])
+                                        if category["title"] in drinkcategoriesList.values or category[
+                                            "title"] in foodcategoriesList.values:
+                                            print("is in list!")
+                                            c = category["title"].replace("Category:", "")
+                                            if len(c) < 127:
+                                                ingredient.ingredient_tags.add(
+                                                    IngredientTag.objects.get_or_create(name=c)[0])
+                                                print(c + " --- saved into DB")
 
     for ingredient in Ingredient.objects.filter(ingredient_tags__isnull=True):
         url = 'https://en.wikipedia.org/w/api.php'
         splitString = ingredient.name.split()
         print('Try to search for SPLIT ingredient...' + str(splitString))
-        if len(splitString) > 2:
-            tempString = splitString.copy()
-            del tempString[0]
-            withoutFirst = ' '.join(tempString)
-            tempString = splitString.copy()
-            del tempString[-1]
-            withoutLast = ' '.join(tempString)
-            splitString.append(withoutFirst)
-            splitString.append(withoutLast)
 
         for split in splitString:
             print('split:' + split)
@@ -130,7 +124,7 @@ def getAllTags(self):
                 format='json',
                 action='opensearch',
                 search=split,
-                limit=100
+                limit=10
             )
 
             resp = requests.get(url=url, params=params)
@@ -153,16 +147,17 @@ def getAllTags(self):
                     for page in data["query"]["pages"]:
                         print(ingredient)
                         if page != "-1":
-                            for category in data["query"]["pages"][page]["categories"]:
-                                print(category["title"])
-                                if category["title"] in drinkcategoriesList.values or category[
-                                    "title"] in foodcategoriesList.values:
-                                    print("is in list!")
-                                    c = category["title"].replace("Category:", "")
-                                    if len(c) < 127:
-                                        ingredient.ingredient_tags.add(
-                                            IngredientTag.objects.get_or_create(name=c)[0])
-                                        print(c + " --- saved into DB")
+                            if "categories" in data["query"]["pages"][page]:
+                                for category in data["query"]["pages"][page]["categories"]:
+                                    print(category["title"])
+                                    if category["title"] in drinkcategoriesList.values or category[
+                                        "title"] in foodcategoriesList.values:
+                                        print("is in list!")
+                                        c = category["title"].replace("Category:", "")
+                                        if len(c) < 127:
+                                            ingredient.ingredient_tags.add(
+                                                IngredientTag.objects.get_or_create(name=c)[0])
+                                            print(c + " --- saved into DB")
 
 
 class Command(BaseCommand, ABC):
