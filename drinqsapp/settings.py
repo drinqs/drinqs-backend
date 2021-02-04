@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'graphene_django',
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.postgres',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -62,8 +63,8 @@ GRAPHENE = {
 GRAPHQL_JWT = {
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
-    'JWT_EXPIRATION_DELTA': timedelta(minutes=60),
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+    'JWT_EXPIRATION_DELTA': timedelta(hours=24),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
 }
 
 MIDDLEWARE = [
@@ -83,6 +84,7 @@ ROOT_URLCONF = 'drinqsapp.urls'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://www.drinqs.de',
+    'https://drinqs.de'
 ]
 
 TEMPLATES = [

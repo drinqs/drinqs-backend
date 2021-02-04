@@ -13,6 +13,7 @@ services:
       SECRET_KEY_BASE: "abcdefghijklmnopqrstuvwxyz"
     ports:
       - "8000:8000"
+      - "4000:4000"
 
   # assets:
   #   build:
