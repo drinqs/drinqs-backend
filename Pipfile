@@ -20,6 +20,8 @@ pyjwt = "~=1.7"
 django-autoslug = "*"
 requests = "*"
 ptvsd = "*"
+django-request-logging = "*"
+numpy = "==1.19.5"
 
 [dev-packages]
 

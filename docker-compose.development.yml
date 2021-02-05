@@ -11,6 +11,7 @@ services:
     environment:
       DATABASE_URL: "postgres://drinqs:password@db:5432/drinqs"
       SECRET_KEY_BASE: "abcdefghijklmnopqrstuvwxyz"
+      DJANGO_DEBUG: "True"
     ports:
       - "8000:8000"
       - "4000:4000"
