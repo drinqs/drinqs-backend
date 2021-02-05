@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    'rest_framework',
 ]
 
 GRAPHENE = {

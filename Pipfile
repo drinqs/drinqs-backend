@@ -22,6 +22,7 @@ requests = "*"
 ptvsd = "*"
 django-request-logging = "*"
 numpy = "==1.19.5"
+djangorestframework = "*"
 
 [dev-packages]
 
