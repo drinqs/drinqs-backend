@@ -19,7 +19,7 @@ class User(AbstractUser):
                     bookmarked=True,
                 ).values_list('cocktail_id', flat=True)
             ),
-        )
+        ).order_by('name')
 
 # (E) Glass
 class Glass(models.Model):
