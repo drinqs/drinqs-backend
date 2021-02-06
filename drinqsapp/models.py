@@ -96,7 +96,7 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     liked = models.BooleanField(default=None, null=True)
-    bookmarked = models.BooleanField(default=None, null=True)
+    bookmarked = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return f"{self.user}-{self.cocktail}"
