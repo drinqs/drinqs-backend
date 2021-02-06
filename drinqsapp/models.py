@@ -21,6 +21,27 @@ class User(AbstractUser):
             ),
         ).order_by('name')
 
+    def liked_cocktails(self):
+        return Cocktail.objects.filter(
+            id__in=Subquery(
+                Review.objects.filter(
+                    user_id=self.id,
+                    liked=True,
+                ).values_list('cocktail_id', flat=True)
+            ),
+        ).order_by('name')
+
+    def disliked_cocktails(self):
+        return Cocktail.objects.filter(
+            id__in=Subquery(
+                Review.objects.filter(
+                    user_id=self.id,
+                    liked=False,
+                ).values_list('cocktail_id', flat=True)
+            ),
+        ).order_by('name')
+
+
 # (E) Glass
 class Glass(models.Model):
     name = models.CharField(max_length=128, unique=True)
