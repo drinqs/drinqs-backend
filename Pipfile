@@ -20,6 +20,8 @@ pyjwt = "~=1.7"
 django-autoslug = "*"
 requests = "*"
 ptvsd = "*"
+sklearn = "*"
+scipy = "*"
 
 [dev-packages]
 
