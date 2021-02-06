@@ -42,7 +42,7 @@ def populateDatabase(df1, df23, df4):
     # ingredients for df1 and df4
     ingredients = pd.Series(dtype='str')
     for i in range(1, sum('ingredient' in col for col in df1.columns) + 1):
-        if i%2 == 0: ingredients = ingredients.append(df4[f'ingredient{int(i/2)}'].dropna())
+        # if i%2 == 0: ingredients = ingredients.append(df4[f'ingredient{int(i/2)}'].dropna())
         ingredients = ingredients.append(df1[f'ingredient{i}'].dropna())
     ingredients = pd.Series(map(str.title, ingredients)) # change ingredient name to title case
     ingredients = pd.Series(map(str.strip, ingredients)).dropna().drop_duplicates().sort_values(ignore_index=True) # remove whitespaces
@@ -62,19 +62,19 @@ def populateDatabase(df1, df23, df4):
                 measurement = cocktail[f'measure{i}'].strip() if isinstance(cocktail[f'measure{i}'], str) else None
                 CocktailIngredient.objects.create(measurement=measurement, position=1, cocktail=cocktailObject, ingredient=ingredientObject).save()
 
-    # cocktails and recipes in df4
-    for cocktail in df4.iloc:
-        try: Cocktail.objects.get(name=cocktail['name'])
-        except Cocktail.DoesNotExist:
-            try: glass = Glass.objects.get(name=str(cocktail.glass).title())
-            except Glass.DoesNotExist: glass = None
-            cocktailObject = Cocktail.objects.create(name=cocktail['name'], alcoholic=0, category=cocktail.category, preparation=cocktail.preparation, thumbnail_url='', glass=glass)
-            cocktailObject.save()
-            for i in range(1, sum('ingredient' in col for col in df4.columns) + 1):
-                if isinstance(cocktail[f'ingredient{i}'], str):
-                    ingredientObject = Ingredient.objects.get(name=cocktail[f'ingredient{i}'].strip().title())
-                    measurement = cocktail[f'measurement{i}'].strip() if isinstance(cocktail[f'measurement{i}'], str) else None
-                    CocktailIngredient.objects.create(measurement=measurement, position=1, cocktail=cocktailObject, ingredient=ingredientObject).save()
+    # # cocktails and recipes in df4
+    # for cocktail in df4.iloc:
+    #     try: Cocktail.objects.get(name=cocktail['name'])
+    #     except Cocktail.DoesNotExist:
+    #         try: glass = Glass.objects.get(name=str(cocktail.glass).title())
+    #         except Glass.DoesNotExist: glass = None
+    #         cocktailObject = Cocktail.objects.create(name=cocktail['name'], alcoholic=0, category=cocktail.category, preparation=cocktail.preparation, thumbnail_url='', glass=glass)
+    #         cocktailObject.save()
+    #         for i in range(1, sum('ingredient' in col for col in df4.columns) + 1):
+    #             if isinstance(cocktail[f'ingredient{i}'], str):
+    #                 ingredientObject = Ingredient.objects.get(name=cocktail[f'ingredient{i}'].strip().title())
+    #                 measurement = cocktail[f'measurement{i}'].strip() if isinstance(cocktail[f'measurement{i}'], str) else None
+    #                 CocktailIngredient.objects.create(measurement=measurement, position=1, cocktail=cocktailObject, ingredient=ingredientObject).save()
 
 
 
