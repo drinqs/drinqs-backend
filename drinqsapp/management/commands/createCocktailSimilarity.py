@@ -1,7 +1,8 @@
 from abc import ABC
 import requests
 from django.core.management.base import BaseCommand
-from drinqsapp.models import Ingredient, IngredientTag, Cocktail
+from drinqsapp.models import Ingredient, IngredientTag, Cocktail, CocktailCondensedMatrix
+from itertools import islice
 from re import search
 import numpy as np
 import pandas as pd
@@ -135,36 +136,29 @@ def create_cocktail_ingredientCluster_matrix(clustered_Ingredients):
 class Command(BaseCommand, ABC):
     def handle(self, *args, **kwargs):
 
+        ##clustering
         ingredient_tag_matrix = create_ingredient_ingredienttag_matrix()
-
         condensed_matrix = create_condensed_distance_matrix(ingredient_tag_matrix, 'cosine')
-
         squared_matrix = scipy.spatial.distance.squareform(condensed_matrix)
-        print(squared_matrix)
-
         clustered_ingredients = create_ingredient_clusters(condensedMatrix=condensed_matrix, method='ward',
                                              threshold=1.5, metric='cosine', criterion='distance',
                                              withIDs=True)
-        print(clustered_ingredients)
 
+
+        ##cocktail similarity
         cocktail_ingrCluster_matrix = create_cocktail_ingredientCluster_matrix(clustered_ingredients)
 
-        print(cocktail_ingrCluster_matrix[0])
-        print(cocktail_ingrCluster_matrix[1])
-        print(cocktail_ingrCluster_matrix[2])
-        print(cocktail_ingrCluster_matrix[3])
+        condensed_simil_matrix = create_condensed_distance_matrix(cocktail_ingrCluster_matrix, metric=cosine_similarity)
+        squared_simil_matrix = scipy.spatial.distance.squareform(condensed_simil_matrix)
+        squared_simil_matrix_WithIds = np.r_[np.transpose(cocktail_ingrCluster_matrix[1:, 0:1]), squared_simil_matrix]
+        squared_simil_matrix_WithIds = np.c_[cocktail_ingrCluster_matrix[0:, 0:1], squared_simil_matrix_WithIds]
+        print(squared_simil_matrix_WithIds)
+        condensed_simil_matrix_WithIds = scipy.spatial.distance.squareform(squared_simil_matrix_WithIds)
 
-        cocktail_similarity_matrix = create_similarity_matrix(cocktail_ingrCluster_matrix)
-
-        print(cocktail_similarity_matrix[0])
-        print(cocktail_similarity_matrix[1])
-        print(cocktail_similarity_matrix[2])
-        print(cocktail_similarity_matrix[3])
-        #np.savetxt("./cocktailSimilarityMatrix.csv", cocktail_similarity_matrix, delimiter=";", fmt='%f')
-        #distance = create_similarity_matrix(Ingredient_Tag_Matrix)
-
-        #adds column to end of matrix
-        #np.c_[A, np.ones(N)]
-
-        #print(distance)
+        start = time.time()
+        simil_list = list(condensed_simil_matrix_WithIds)
+        cocktailCondensedMatrix = CocktailCondensedMatrix(value=simil_list)
+        cocktailCondensedMatrix.save()
+        end = time.time()
+        print("Db_save:" + str(end - start))
 
