@@ -120,15 +120,11 @@ def create_cocktail_ingredientCluster_matrix(clustered_Ingredients):
     for cocktail in Cocktail.objects.all():
         row_id = np.argwhere(OnlyFirstColMatrix == cocktail.id)[0][0]
 
-        #print("Cocktail with id:" + str(cocktail.id))
-        #print("found in row:" + str(row_id))
         for ingredient in cocktail.ingredients.all():
             cluster_col_id = np.where(OnlyFirstColInput == ingredient.id)[0][0]
             cluster_id = clustered_Ingredients[cluster_col_id, 1]
             col_id =  np.where(OnlyFirstRowMatrix == cluster_id)[0][0]
-            #print("ingredient with id:" + str(ingredient.id))
-            #print("is in cluster" + str(cluster_id))
-            #print("found in matrix - col:" + str(col_id))
+
             matrix[row_id, col_id] = matrix[row_id, col_id] + 1
 
     return matrix
@@ -144,7 +140,6 @@ class Command(BaseCommand, ABC):
                                              threshold=1.5, metric='cosine', criterion='distance',
                                              withIDs=True)
 
-
         ##cocktail similarity
         cocktail_ingrCluster_matrix = create_cocktail_ingredientCluster_matrix(clustered_ingredients)
 
@@ -152,13 +147,11 @@ class Command(BaseCommand, ABC):
         squared_simil_matrix = scipy.spatial.distance.squareform(condensed_simil_matrix)
         squared_simil_matrix_WithIds = np.r_[np.transpose(cocktail_ingrCluster_matrix[1:, 0:1]), squared_simil_matrix]
         squared_simil_matrix_WithIds = np.c_[cocktail_ingrCluster_matrix[0:, 0:1], squared_simil_matrix_WithIds]
-        print(squared_simil_matrix_WithIds)
         condensed_simil_matrix_WithIds = scipy.spatial.distance.squareform(squared_simil_matrix_WithIds)
 
-        start = time.time()
+
         simil_list = list(condensed_simil_matrix_WithIds)
         cocktailCondensedMatrix = CocktailCondensedMatrix(value=simil_list)
         cocktailCondensedMatrix.save()
-        end = time.time()
-        print("Db_save:" + str(end - start))
+
 
