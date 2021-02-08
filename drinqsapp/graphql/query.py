@@ -39,7 +39,7 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_next_cocktail(self, info):
         try:
-            recommendation = utility.getRecommendationForUser(userID=2, getOnlyFirst=True)
+            recommendation = utility.getRecommendationForUser(userID=info.context.user.id, getOnlyFirst=True)
             return recommendation
         except models.Cocktail.DoesNotExist:
             return None
