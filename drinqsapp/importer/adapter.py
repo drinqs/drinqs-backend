@@ -52,7 +52,7 @@ class MrBostonAdapter(ImporterAdapter):
     def getCocktail(self, jsonCocktail):
       name = jsonCocktail["name"]
       preparation = jsonCocktail["instructions"]
-      thumbnail_url = ""
+      thumbnail_url = self.getThumbnailUrl(jsonCocktail["images"])
       category = jsonCocktail["recipe_category"]["name"]
       glass = self.getGlass(jsonCocktail["glass"])
 
@@ -100,6 +100,14 @@ class MrBostonAdapter(ImporterAdapter):
           return glass
         else:
           return None
+
+    def getThumbnailUrl(self, jsonImageList):
+        if isinstance(jsonImageList, list):
+            image_list = jsonImageList[0]["image_sizes"]
+            if isinstance(image_list, list):
+                return image_list[0]["url"]
+            else:
+                return ""
 
     @staticmethod
     def __mapMeasurementId(measurement_id):
