@@ -13,7 +13,8 @@ def cleanDatasets(df1, df2, df3):
     df1.drop(columns=['Unnamed: 0', 'dateModified', 'idDrink', 'strVideo', 'strIBA', 'strIngredient13', 'strIngredient14', 'strIngredient15', 'strMeasure13', 'strMeasure14', 'strMeasure15'], errors='ignore', inplace=True)
     df1.rename(columns={'strDrink': 'name', 'strDrinkThumb': 'thumbnailurl', 'strInstructions': 'preparation'}, inplace=True)
     df1.columns = [re.sub(r'^str', '', colname).lower() for colname in df1.columns]
-
+    df1.assign(thumbnailurl=pd.Series(map(lambda x: x.replace("http", "https") if isinstance(x, str) else x, df1.thumbnailurl)), inplace=True)
+    
     # df2
     df2.drop(columns=['Bartender', 'Bar/Company', 'Location', 'Garnish', 'Notes'], errors='ignore', inplace=True)
     df2.rename(columns={'Cocktail Name': 'name', 'Glassware':'glass'}, inplace=True)
