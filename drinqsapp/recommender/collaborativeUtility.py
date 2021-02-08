@@ -28,14 +28,17 @@ from django.core.management.base import BaseCommand
 def formatData():
     df = pd.DataFrame(columns=["user_id", "ctail_id", "rating"])
     for review in Review.objects.all():
-        if review.bookmarked:
+
+        if not review.liked:
+            df.loc[review.id] = [review.user_id, review.cocktail_id, -0.5]
+        elif review.bookmarked:
             df.loc[review.id] = [review.user_id, review.cocktail_id, 1]
-        elif not review.bookmarked:
-            df.loc[review.id] = [review.user_id, review.cocktail_id, -1]
         elif review.liked:
             df.loc[review.id] = [review.user_id, review.cocktail_id, 0.5]
-        elif review.liked:
-            df.loc[review.id] = [review.user_id, review.cocktail_id, -0.5]
+        elif not review.bookmarked:
+            df.loc[review.id] = [review.user_id, review.cocktail_id, -1]
+
+
     return df
 
 

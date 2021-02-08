@@ -54,47 +54,41 @@ def getUserProfileOnCocktailSimilaritiesFromCacheOrDB(userID):
 
 
 def getRecommendationForUser(userID, getOnlyFirst):
-    start = time.time()
+    #start = time.time()
     collaborativeRecs = collaborativeUtility.getCollabRecsforUser(userID)
     itemBasedRecs = getUserProfileOnCocktailSimilaritiesFromCacheOrDB(userID)
-    print(time.time() - start)
+    #print(time.time() - start)
 
     scaler1 = MinMaxScaler(feature_range=(0, 1)).fit(itemBasedRecs.T)
     scaler2 = MinMaxScaler(feature_range=(0, 1)).fit(collaborativeRecs.T)
 
-    print(collaborativeRecs.sort_values(by=userID, axis=1, ascending=False))
-    print(itemBasedRecs.sort_values(by=0, axis=1, ascending=False))
-    print("----------------------------")
-
-    print("sorted itemBasedRecs scaled ")
     itemBasedRecs.iloc[:,:] = scaler1.transform(itemBasedRecs.T).T
-    print(itemBasedRecs.sort_values(by=0, axis=1, ascending=False))
 
-    print("collaborativeRecs scaled ")
     collaborativeRecs.iloc[:,:] = scaler2.transform(collaborativeRecs.T).T
-    print(collaborativeRecs.sort_values(by=userID, axis=1, ascending=False))
 
-    print(time.time() - start)
+    #print(time.time() - start)
 
-    weightCollaborative = ( min (numberOfRatingsOFUserX) / 220 ; 0,6)
-    collaborativeRecs= collaborativeRecs * weightCollaborative
-    itemBasedRecs = itemBasedRecs * 1 - weightCollaborative
+    reviewCount = Review.objects.filter(user_id=userID).count()
 
-    appendedStuff = itemBasedRecs.append(collaborativeRecs)
-    print(appendedStuff)
-    test = appendedStuff.sum().to_frame().transpose()
-    print(test)
-    print(time.time() - start)
-    #    .sort_values(by=0, axis=1, ascending=False)
-    #if getOnlyFirst:
-    #    cocktail = Cocktail.objects.get(pk=itemBasedRecommendations.columns[0])
-    #    return cocktail
-    #else:
-    #    intListOfIndices = itemBasedRecommendations.columns.astype(int)
-     #   preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(intListOfIndices)])
-    #    cocktails = Cocktail.objects.filter(pk__in=intListOfIndices).order_by(preserved)
-    #return cocktails
-    return None
+    weightCollaborative = (min((reviewCount / 180), 0.6))
+
+    bothRecsInFrame = itemBasedRecs.append(collaborativeRecs)
+    itemBasedRecs.index = [userID]
+    bothRecsInFrame.fillna(value=itemBasedRecs, axis=1, inplace=True)
+    bothRecsInFrameWeightened = bothRecsInFrame.mul([1-weightCollaborative, weightCollaborative], axis=0)
+
+    combinedRecommendations = bothRecsInFrameWeightened.sum().to_frame().transpose()
+    combinedRecommendations = combinedRecommendations.sort_values(by=0, axis=1, ascending=False)
+    #print(time.time() - start)
+
+    if getOnlyFirst:
+        cocktail = Cocktail.objects.get(pk=combinedRecommendations.columns[0])
+        return cocktail
+    else:
+        intListOfIndices = combinedRecommendations.columns.astype(int)
+        preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(intListOfIndices)])
+        cocktails = Cocktail.objects.filter(pk__in=intListOfIndices).order_by(preserved)
+    return cocktails
 
 
 def updateCachedUserRecOnMutate(userID, updatedReview, oldReview=None):
