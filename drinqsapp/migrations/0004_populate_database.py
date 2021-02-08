@@ -14,7 +14,7 @@ def cleanDatasets(df1, df2, df3):
     df1.rename(columns={'strDrink': 'name', 'strDrinkThumb': 'thumbnailurl', 'strInstructions': 'preparation'}, inplace=True)
     df1.columns = [re.sub(r'^str', '', colname).lower() for colname in df1.columns]
     df1.assign(thumbnailurl=pd.Series(map(lambda x: x.replace("http", "https") if isinstance(x, str) else x, df1.thumbnailurl)), inplace=True)
-    
+
     # df2
     df2.drop(columns=['Bartender', 'Bar/Company', 'Location', 'Garnish', 'Notes'], errors='ignore', inplace=True)
     df2.rename(columns={'Cocktail Name': 'name', 'Glassware':'glass'}, inplace=True)
@@ -38,7 +38,6 @@ def populateDatabase(df1, df23):
 
     # ingredients for df1
     ingredients = pd.Series(dtype='str')
-    for i in range(1, sum('ingredient' in col for col in df1.columns) + 1):
     ingredients = pd.Series(map(str.title, ingredients)) # change ingredient name to title case
     ingredients = pd.Series(map(str.strip, ingredients)).dropna().drop_duplicates().sort_values(ignore_index=True) # remove whitespaces
     f'dataset contains {len(ingredients)} unique ingredients'
