@@ -8,7 +8,7 @@ class DataHandler:
         jsonCocktailList = mrboston.getJsonCocktailList(response)
         mrboston.getCocktails(jsonCocktailList)
 
-    def populate(self):
+    def getCsvData(self):
         df1, df2, df3 = CsvImport().importDatasets('data/all_drinks.csv', 'data/hotaling_cocktails.csv', 'data/hotaling_cocktails2.csv')
         CsvImport().cleanDatasets(df1 = df1, df2 = df2, df3 = df3)
         df23 = CsvImport().joinDatasets(df2 = df2, df3 = df3)
