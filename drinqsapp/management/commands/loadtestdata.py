@@ -8,8 +8,8 @@ class Command(BaseCommand, ABC):
     def handle(self, *args, **kwargs):
         bo_list = [True, False]
         warnings.simplefilter(action='ignore', category=FutureWarning)
-
-        bad_review = autofixture.create("drinqsapp.review", 50, field_values={'liked': True,
-                                                                              'bookmarked': np.random.choice(bo_list, 1)})
-        middle_review = autofixture.create("drinqsapp.review", 50,field_values={'liked': bool(np.random.choice(bo_list, 1))})
+        for i in range(1, 25):
+            bad_review = autofixture.create("drinqsapp.review", 15, field_values={'liked': True,
+                                                                                  'bookmarked': np.random.choice(bo_list, 1)})
+            middle_review = autofixture.create("drinqsapp.review", 15,field_values={'liked': bool(np.random.choice(bo_list, 1))})
 

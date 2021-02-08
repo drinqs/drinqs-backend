@@ -22,6 +22,10 @@ requests = "*"
 ptvsd = "*"
 sklearn = "*"
 scipy = "*"
+django-autofixture = "*"
+scikit-surprise = "*"
+django-utils-six = "*"
+
 
 [dev-packages]
 

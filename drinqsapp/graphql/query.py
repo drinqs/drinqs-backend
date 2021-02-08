@@ -36,13 +36,14 @@ class Query(graphene.ObjectType):
         return recommendations
 
     next_cocktail = graphene.Field(types.Cocktail)
-    @login_required
+    #@login_required
     def resolve_next_cocktail(self, info):
-        try:
-            recommendation = utility.getRecommendationForUser(userID=info.context.user.id, getOnlyFirst=True)
-            return recommendation
-        except models.Cocktail.DoesNotExist:
-            return None
+        utility.getRecommendationForUser(2, getOnlyFirst=False)
+        #try:
+        #    recommendation = utility.getRecommendationForUser(userID=info.context.user.id, getOnlyFirst=True)
+        #    return recommendation
+        #except models.Cocktail.DoesNotExist:
+        #    return None
 
     bookmarks = graphene.relay.ConnectionField(types.CocktailConnection)
     @login_required
