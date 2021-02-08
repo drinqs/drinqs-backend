@@ -19,7 +19,28 @@ class User(AbstractUser):
                     bookmarked=True,
                 ).values_list('cocktail_id', flat=True)
             ),
-        )
+        ).order_by('name')
+
+    def liked_cocktails(self):
+        return Cocktail.objects.filter(
+            id__in=Subquery(
+                Review.objects.filter(
+                    user_id=self.id,
+                    liked=True,
+                ).values_list('cocktail_id', flat=True)
+            ),
+        ).order_by('name')
+
+    def disliked_cocktails(self):
+        return Cocktail.objects.filter(
+            id__in=Subquery(
+                Review.objects.filter(
+                    user_id=self.id,
+                    liked=False,
+                ).values_list('cocktail_id', flat=True)
+            ),
+        ).order_by('name')
+
 
 # (E) Glass
 class Glass(models.Model):
@@ -96,7 +117,7 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
     liked = models.BooleanField(default=None, null=True)
-    bookmarked = models.BooleanField(default=None, null=True)
+    bookmarked = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return f"{self.user}-{self.cocktail}"
