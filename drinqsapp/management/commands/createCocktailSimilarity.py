@@ -137,7 +137,11 @@ class Command(BaseCommand, ABC):
         condensed_matrix = create_condensed_distance_matrix(ingredient_tag_matrix, 'cosine')
         squared_matrix = scipy.spatial.distance.squareform(condensed_matrix)
         clustered_ingredients = create_ingredient_clusters(condensedMatrix=condensed_matrix, method='ward',
+<<<<<<< HEAD
                                              threshold=1.2, metric='cosine', criterion='distance',
+=======
+                                             threshold=1.5, metric='cosine', criterion='distance',
+>>>>>>> origin/main
                                              withIDs=True)
 
         ##cocktail similarity
