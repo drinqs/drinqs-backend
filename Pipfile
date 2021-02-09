@@ -25,9 +25,8 @@ scipy = "*"
 django-autofixture = "*"
 scikit-surprise = "*"
 django-utils-six = "*"
-django-request-logging = "*"
-numpy = "==1.19.5"
 djangorestframework = "*"
+django-request-logging = "*"
 
 [dev-packages]
 
