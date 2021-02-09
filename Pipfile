@@ -20,6 +20,8 @@ pyjwt = "~=1.7"
 django-autoslug = "*"
 requests = "*"
 ptvsd = "*"
+sklearn = "*"
+scipy = "*"
 django-request-logging = "*"
 numpy = "==1.19.5"
 djangorestframework = "*"
@@ -28,4 +30,3 @@ djangorestframework = "*"
 
 [requires]
 python_version = "3.9"
-

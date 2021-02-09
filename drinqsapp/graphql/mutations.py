@@ -1,8 +1,10 @@
 import graphene
 from graphql_jwt.decorators import login_required, staff_member_required
-
+import copy
+import threading
 import drinqsapp.graphql.types as types
 import drinqsapp.models as models
+from drinqsapp.recommender import utility
 
 class UserMutation(graphene.Mutation):
     class Arguments:
@@ -101,15 +103,19 @@ class ReviewMutation(graphene.Mutation):
     @login_required
     def mutate(cls, root, info, cocktail_id, **kwargs):
         user_id = info.context.user.id
-
+        oldReview = None
         try:
             review = models.Review.objects.get(cocktail_id=cocktail_id, user_id=user_id)
+            oldReview = copy.copy(review)
         except models.Review.DoesNotExist:
             review = models.Review.objects.create(cocktail_id=cocktail_id, user_id=user_id)
 
         review.liked = kwargs.get('liked', None)
         review.bookmarked = kwargs.get('bookmarked', False)
         review.save()
+
+        t1 = threading.Thread(target=utility.updateCachedUserRecOnMutate, args=(user_id, review, oldReview))
+        t1.start()
 
         # Notice we return an instance of this mutation
         return ReviewMutation(review=review)
