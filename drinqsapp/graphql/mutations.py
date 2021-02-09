@@ -6,6 +6,7 @@ import threading
 import drinqsapp.graphql.types as types
 import drinqsapp.models as models
 from drinqsapp.recommender import utility
+from django.core.cache import cache
 
 class UserMutation(graphene.Mutation):
     class Arguments:
@@ -114,6 +115,8 @@ class ReviewMutation(graphene.Mutation):
         review.liked = kwargs.get('liked', None)
         review.bookmarked = kwargs.get('bookmarked', False)
         review.save()
+
+        cache.set(key='last_user_rec' + str(user_id), value=cocktail_id, timeout=10)
 
         t1 = threading.Thread(target=utility.updateCachedUserRecOnMutate, args=(user_id, review, oldReview))
         t1.start()

@@ -82,7 +82,14 @@ def getRecommendationForUser(userID, getOnlyFirst):
     #print(time.time() - start)
 
     if getOnlyFirst:
-        cocktail = Cocktail.objects.get(pk=combinedRecommendations.columns[0])
+        lastRec = cache.get('last_user_rec' + str(userID))
+        if lastRec is None:
+            cocktail = Cocktail.objects.get(pk=combinedRecommendations.columns[0])
+        else:
+            if combinedRecommendations.columns[0] == lastRec:
+                cocktail = Cocktail.objects.get(pk=combinedRecommendations.columns[1])
+            else:
+                cocktail = Cocktail.objects.get(pk=combinedRecommendations.columns[0])
         return cocktail
     else:
         intListOfIndices = combinedRecommendations.columns.astype(int)
