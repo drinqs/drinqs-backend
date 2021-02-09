@@ -3,6 +3,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from drinqsapp.authentication import TokenAuthentication
+from drinqsapp.serializers import UserSerializer
 from graphql_jwt import signals
 from graphql_jwt.decorators import on_token_auth_resolve
 from graphql_jwt.utils import jwt_payload, jwt_encode
@@ -83,12 +84,4 @@ def current_user(request):
     user = request.user
     if not user or isinstance(user, AnonymousUser):
         return Response({ 'error': 'You are not allowed to see this page' }, status=status.HTTP_401_UNAUTHORIZED)
-    return Response({
-        'user': {
-            'id': user.id,
-            'firstName': user.first_name,
-            'lastName': user.last_name,
-            'username': user.username,
-            'email': user.email,
-        }
-    })
+    return Response({ 'user': UserSerializer(user).data })
