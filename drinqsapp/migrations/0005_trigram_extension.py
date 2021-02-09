@@ -5,7 +5,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('drinqsapp', '0004_populate_database'),
+        ('drinqsapp', '0003_auto_20210124_1945'),
     ]
 
     operations = [

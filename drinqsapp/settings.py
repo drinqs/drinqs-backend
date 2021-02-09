@@ -29,6 +29,25 @@ SECRET_KEY = os.environ['SECRET_KEY_BASE']
 # DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
+if DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'loggers': {
+            'django.request': {
+                'handlers': ['console'],
+                'level': 'DEBUG',  # change debug level as appropiate
+                'propagate': False,
+            },
+        },
+    }
+
+
 ALLOWED_HOSTS = ['app.drinqs.de', '127.0.0.1', 'localhost']
 
 
@@ -51,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    'rest_framework',
 ]
 
 GRAPHENE = {
@@ -78,6 +98,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE.append('request_logging.middleware.LoggingMiddleware')
 
 ROOT_URLCONF = 'drinqsapp.urls'
 
