@@ -27,6 +27,7 @@ scikit-surprise = "*"
 django-utils-six = "*"
 djangorestframework = "*"
 django-request-logging = "*"
+djangorestframework-camel-case = "*"
 
 [dev-packages]
 
