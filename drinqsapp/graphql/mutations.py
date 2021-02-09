@@ -111,7 +111,7 @@ class ReviewMutation(graphene.Mutation):
             review = models.Review.objects.create(cocktail_id=cocktail_id, user_id=user_id)
 
         review.liked = kwargs.get('liked', None)
-        review.bookmarked = kwargs.get('bookmarked', None)
+        review.bookmarked = kwargs.get('bookmarked', False)
         review.save()
 
         t1 = threading.Thread(target=utility.updateCachedUserRecOnMutate, args=(user_id, review, oldReview))

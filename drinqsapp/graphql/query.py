@@ -49,6 +49,16 @@ class Query(graphene.ObjectType):
     def resolve_bookmarks(self, info, **args):
         return info.context.user.bookmarks()
 
+    liked_cocktails = graphene.relay.ConnectionField(types.CocktailConnection)
+    @login_required
+    def resolve_liked_cocktails(self, info, **args):
+        return info.context.user.liked_cocktails()
+
+    disliked_cocktails = graphene.relay.ConnectionField(types.CocktailConnection)
+    @login_required
+    def resolve_disliked_cocktails(self, info, **args):
+        return info.context.user.disliked_cocktails()
+
     me = graphene.NonNull(types.User)
     @login_required
     def resolve_me(self, info):

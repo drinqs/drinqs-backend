@@ -22,9 +22,11 @@ requests = "*"
 ptvsd = "*"
 sklearn = "*"
 scipy = "*"
+django-request-logging = "*"
+numpy = "==1.19.5"
+djangorestframework = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.9"
-
