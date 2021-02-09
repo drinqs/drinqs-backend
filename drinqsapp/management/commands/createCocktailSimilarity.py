@@ -137,7 +137,7 @@ class Command(BaseCommand, ABC):
         condensed_matrix = create_condensed_distance_matrix(ingredient_tag_matrix, 'cosine')
         squared_matrix = scipy.spatial.distance.squareform(condensed_matrix)
         clustered_ingredients = create_ingredient_clusters(condensedMatrix=condensed_matrix, method='ward',
-                                             threshold=1.5, metric='cosine', criterion='distance',
+                                             threshold=1.2, metric='cosine', criterion='distance',
                                              withIDs=True)
 
         ##cocktail similarity
@@ -153,5 +153,3 @@ class Command(BaseCommand, ABC):
         simil_list = list(condensed_simil_matrix_WithIds)
         cocktailCondensedMatrix = CocktailCondensedMatrix(value=simil_list)
         cocktailCondensedMatrix.save()
-
-
