@@ -1,3 +1,4 @@
+from collections import namedtuple
 import graphene
 from graphql_jwt.decorators import login_required, staff_member_required
 import copy
@@ -119,3 +120,18 @@ class ReviewMutation(graphene.Mutation):
 
         # Notice we return an instance of this mutation
         return ReviewMutation(review=review)
+
+
+Result = namedtuple('Result', ['status'])
+class OnboardingCompleteMutation(graphene.Mutation):
+
+    status = graphene.String(required=True)
+
+    @classmethod
+    @login_required
+    def mutate(cls, root, info, **kwargs):
+        user = info.context.user
+        user.is_onboarded = True
+        user.save()
+
+        return Result(status='success')
