@@ -5,11 +5,8 @@ import scipy
 import scipy.spatial
 from django.db.models import Case, When
 from django.core.cache import cache
-<<<<<<< HEAD
 from drinqsapp.recommender import collaborativeUtility
 from sklearn.preprocessing import Normalizer, MinMaxScaler
-=======
->>>>>>> origin/main
 
 import time
 import asyncio
@@ -57,7 +54,6 @@ def getUserProfileOnCocktailSimilaritiesFromCacheOrDB(userID):
 
 
 def getRecommendationForUser(userID, getOnlyFirst):
-<<<<<<< HEAD
     #start = time.time()
     collaborativeRecs = collaborativeUtility.getCollabRecsforUser(userID)
     itemBasedRecs = getUserProfileOnCocktailSimilaritiesFromCacheOrDB(userID)
@@ -93,18 +89,6 @@ def getRecommendationForUser(userID, getOnlyFirst):
         preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(intListOfIndices)])
         cocktails = Cocktail.objects.filter(pk__in=intListOfIndices).order_by(preserved)
     return cocktails
-=======
-    itemBasedRecommendations = getUserProfileOnCocktailSimilaritiesFromCacheOrDB(userID)\
-        .sort_values(by=0, axis=1, ascending=False)
-    if getOnlyFirst:
-        cocktail = Cocktail.objects.get(pk=itemBasedRecommendations.columns[0])
-        return cocktail
-    else:
-        intListOfIndices = itemBasedRecommendations.columns.astype(int)
-        preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(intListOfIndices)])
-        cocktails = Cocktail.objects.filter(pk__in=intListOfIndices).order_by(preserved)
-        return cocktails
->>>>>>> origin/main
 
 
 def updateCachedUserRecOnMutate(userID, updatedReview, oldReview=None):
@@ -160,5 +144,3 @@ def updateCachedUserRecOnMutate(userID, updatedReview, oldReview=None):
             currentUserProfile = currentUserProfile.append(curRow)
             currentUserProfile = currentUserProfile.sum().to_frame().transpose()
             cache.set(key='user_rec' + str(userID), value=currentUserProfile, timeout=300)
-
-
