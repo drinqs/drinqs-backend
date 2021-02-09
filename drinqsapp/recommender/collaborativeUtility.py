@@ -98,7 +98,11 @@ def getCollabRecsforUser(userId):
 
     # First map the predictions to each user.
     #start = time.time()
-    predOfUser = predictions.loc[[userId]].dropna(axis=1)
+    try:
+        predOfUser = predictions.loc[[userId]].dropna(axis=1)
+    except:
+        predOfUser = None
+
     #top_n = defaultdict(list)
     #for uid, iid, r_ui, est, details in predictions:
     #    if uid == userId:
