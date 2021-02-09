@@ -58,7 +58,7 @@ def getRecommendationForUser(userID, getOnlyFirst):
     collaborativeRecs = collaborativeUtility.getCollabRecsforUser(userID)
     itemBasedRecs = getUserProfileOnCocktailSimilaritiesFromCacheOrDB(userID)
     #print(time.time() - start)
-    if collaborativeRecs:
+    if not collaborativeRecs is None:
         scaler1 = MinMaxScaler(feature_range=(0, 1)).fit(itemBasedRecs.T)
         scaler2 = MinMaxScaler(feature_range=(0, 1)).fit(collaborativeRecs.T)
 
