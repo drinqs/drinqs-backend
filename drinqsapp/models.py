@@ -12,6 +12,8 @@ from drinqsapp.managers import CocktailManager
 
 # User model (E)
 class User(AbstractUser):
+    is_onboarded = models.BooleanField(default=False, null=False)
+
     def bookmarks(self):
         return Cocktail.objects.filter(
             id__in=Subquery(
