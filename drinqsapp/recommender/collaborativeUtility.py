@@ -64,7 +64,7 @@ def setModelAndPredictionsInCache():
        # built = time.time() - start
         #start = time.time()
         #print('data sets built:', built)
-        algo = SVDpp(n_epochs=10, n_factors=15)
+        algo = SVD(n_epochs=10, n_factors=15)
         # Fitting
         algo.fit(trainset)
         # Predict ratings for all pairs (i,j) that are NOT in the training set.
