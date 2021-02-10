@@ -18,7 +18,7 @@ class UserMutation(graphene.Mutation):
         last_name = graphene.String()
 
     # The class attributes define the response of the mutation
-    user = graphene.NonNull(types.User)
+    user = graphene.Field(types.User)
     errors = graphene.List(graphene.NonNull(types.Error), required=True)
 
     @classmethod
