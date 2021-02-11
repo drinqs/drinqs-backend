@@ -19,8 +19,8 @@ class CocktailManager(models.Manager):
 
         return (
             self.get_queryset()
-            .annotate(search=search_vectors)
-            .filter(search=search_query)
+            .annotate(search=search_vectors, name_search=SearchVector("name", weight="A", config="english"))
+            .filter(models.Q(search=search_query) | models.Q(name_search__icontains=search_term))
             .annotate(rank=search_rank + trigram_similarity)
             .order_by("-rank")
         )
