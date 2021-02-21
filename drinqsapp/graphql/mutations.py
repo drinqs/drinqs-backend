@@ -137,7 +137,4 @@ class OnboardingCompleteMutation(graphene.Mutation):
         user.is_onboarded = True
         user.save()
 
-        # pre-compute recommendations for performance reasons
-        utility.precompute_recommendations(user)
-
         return Result(status='success')
