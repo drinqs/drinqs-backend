@@ -9,6 +9,7 @@ from drinqsapp.recommender import collaborativeUtility
 from sklearn.preprocessing import Normalizer, MinMaxScaler
 
 import time
+import threading
 import asyncio
 
 # TODO: implement serverside caching of distanceMatrix
@@ -167,3 +168,12 @@ def updateCachedUserRecOnMutate(userID, updatedReview, oldReview=None):
             currentUserProfile = currentUserProfile.append(curRow)
             currentUserProfile = currentUserProfile.sum().to_frame().transpose()
             cache.set(key='user_rec' + str(userID), value=currentUserProfile, timeout=300)
+
+def precompute_recommendations(user):
+    if user.is_onboarded and user.review_set.count() > 0:
+        def handler(user_id):
+            getUserProfileOnCocktailSimilaritiesFromCacheOrDB(user_id)
+            collaborativeUtility.getModelAndPredictionsFromCacheOrDB()
+
+        thread = threading.Thread(target=handler, args=(user.id))
+        thread.start()
