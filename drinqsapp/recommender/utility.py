@@ -99,6 +99,8 @@ def getRecommendationForUser(userID, getOnlyFirst):
             return cocktails
 
     else:
+        itemBasedRecs = itemBasedRecs.sort_values(by=0, axis=1, ascending=False)
+
         if getOnlyFirst:
             lastRec = cache.get('last_user_rec' + str(userID))
             if lastRec is None:
