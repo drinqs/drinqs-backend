@@ -175,5 +175,5 @@ def precompute_recommendations(user):
             getUserProfileOnCocktailSimilaritiesFromCacheOrDB(user_id)
             collaborativeUtility.getModelAndPredictionsFromCacheOrDB()
 
-        thread = threading.Thread(target=handler, args=(user.id))
+        thread = threading.Thread(target=handler, args=[user.id])
         thread.start()
