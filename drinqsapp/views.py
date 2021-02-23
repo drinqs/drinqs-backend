@@ -3,7 +3,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from drinqsapp.authentication import TokenAuthentication
-from drinqsapp.recommender.utility import precompute_recommendations
 from drinqsapp.serializers import UserSerializer
 from graphql_jwt import signals
 from graphql_jwt.decorators import on_token_auth_resolve
@@ -37,9 +36,6 @@ def token_auth(request):
     payload = jwt_payload(user, request)
     token = jwt_encode(payload, request)
     refresh_token = refresh_token_lazy(user)
-
-    # pre-compute recommendations for performance reasons
-    precompute_recommendations(user)
 
     return Response({
         'token': token,
