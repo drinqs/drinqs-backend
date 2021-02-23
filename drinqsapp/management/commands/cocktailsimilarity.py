@@ -11,9 +11,9 @@ from scipy.cluster import hierarchy
 class Command(BaseCommand, ABC):
     def handle(self, *args, **kwargs):
         # Clustering of Ingredients
-        ingredient_tag_matrix = compute_ingredient_tag_matrix()
-        ingredient_distance_matrix = compute_condensed_distance_matrix(ingredient_tag_matrix, metric='cosine')
-        clustered_ingredients = create_ingredient_clusters(
+        ingredient_tag_matrix = self.__compute_ingredient_tag_matrix()
+        ingredient_distance_matrix = self.__compute_condensed_distance_matrix(ingredient_tag_matrix, metric='cosine')
+        clustered_ingredients = self.__create_ingredient_clusters(
             matrix=ingredient_distance_matrix,
             method='ward',
             threshold=1.2,
@@ -23,7 +23,7 @@ class Command(BaseCommand, ABC):
         )
 
         # Compute Cocktail Similarity
-        cocktail_similarity_matrix = compute_cocktail_similarity_matrix(clustered_ingredients)
+        cocktail_similarity_matrix = self.__compute_cocktail_similarity_matrix(clustered_ingredients)
         condensed_cocktail_similarity_matrix = scipy.spatial.distance.squareform(cocktail_similarity_matrix)
 
         # Save Cocktail Similarity Matrix to DB
@@ -31,7 +31,7 @@ class Command(BaseCommand, ABC):
         cocktail_condensed_matrix.save()
 
 
-    def compute_ingredient_tag_matrix(self):
+    def __compute_ingredient_tag_matrix(self):
         '''
         Creates a matrix between all Ingredients and all IngredientTags.\n
         Columns are the IngredientTag IDs, while rows are Ingredient IDs.\n
@@ -68,7 +68,7 @@ class Command(BaseCommand, ABC):
 
         return matrix
 
-    def compute_condensed_distance_matrix(self, matrix, metric):
+    def __compute_condensed_distance_matrix(self, matrix, metric):
         '''
         Creates a similarity matrix between all Ingredients based on cosine similarity
         regarding their IngredientTags.
@@ -88,7 +88,7 @@ class Command(BaseCommand, ABC):
         return condensed_matrix
 
 
-    def create_ingredient_clusters(self, matrix, method, threshold, metric, criterion, with_ids=False):
+    def __create_ingredient_clusters(self, matrix, method, threshold, metric, criterion, with_ids=False):
         cluster_method = hierarchy.linkage(matrix, method=method, metric=metric)
         cluster_result = hierarchy.fcluster(cluster_method, threshold, criterion=criterion)
 
@@ -101,7 +101,7 @@ class Command(BaseCommand, ABC):
         else:
             return cluster_result
 
-    def create_cocktail_ingredient_cluster_matrix(self, clustered_ingredients):
+    def __create_cocktail_ingredient_cluster_matrix(self, clustered_ingredients):
         '''
         Creates a matrix between all Cocktails and all given Ingredient Clusters.\n
         Columns are the Cluster IDs, while rows are Cocktail IDs.\n
@@ -143,7 +143,7 @@ class Command(BaseCommand, ABC):
 
         return matrix
 
-    def compute_cocktail_similarity_matrix(self, clustered_ingredients):
+    def __compute_cocktail_similarity_matrix(self, clustered_ingredients):
         '''
         Generates a Cocktail Similarity Matrix of the form:\n
         \n
@@ -170,10 +170,10 @@ class Command(BaseCommand, ABC):
             else:
                 return np.dot(a, b) / result
 
-        cocktail_ingredient_cluster_matrix = create_cocktail_ingredient_cluster_matrix(clustered_ingredients)
+        cocktail_ingredient_cluster_matrix = self.__create_cocktail_ingredient_cluster_matrix(clustered_ingredients)
 
         # distance with inverse cosine distance = cosine similarity
-        condensed_cocktail_similarity_matrix = compute_condensed_distance_matrix(cocktail_ingredient_cluster_matrix, metric=inverse_cosine_distance)
+        condensed_cocktail_similarity_matrix = self.__compute_condensed_distance_matrix(cocktail_ingredient_cluster_matrix, metric=inverse_cosine_distance)
         cocktail_similarity_matrix = scipy.spatial.distance.squareform(condensed_cocktail_similarity_matrix)
 
         cocktail_similarity_matrix_with_ids = np.r_[np.transpose(cocktail_ingredient_cluster_matrix[1:, :1]), cocktail_similarity_matrix]
