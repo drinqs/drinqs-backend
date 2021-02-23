@@ -1,11 +1,11 @@
 from collections import namedtuple
 import graphene
 from graphql_jwt.decorators import login_required, staff_member_required
-import copy
+from copy import copy
 import threading
 import drinqsapp.graphql.types as types
 import drinqsapp.models as models
-from drinqsapp.recommender import utility
+from drinqsapp.recommender import Recommender
 from django.core.cache import cache
 
 class UserMutation(graphene.Mutation):
@@ -104,22 +104,23 @@ class ReviewMutation(graphene.Mutation):
     @classmethod
     @login_required
     def mutate(cls, root, info, cocktail_id, **kwargs):
-        user_id = info.context.user.id
-        oldReview = None
+        user = info.context.user
+        old_review = None
+
         try:
-            review = models.Review.objects.get(cocktail_id=cocktail_id, user_id=user_id)
-            oldReview = copy.copy(review)
+            review = models.Review.objects.get(cocktail_id=cocktail_id, user_id=user.id)
+            old_review = copy(review)
         except models.Review.DoesNotExist:
-            review = models.Review.objects.create(cocktail_id=cocktail_id, user_id=user_id)
+            review = models.Review.objects.create(cocktail_id=cocktail_id, user_id=user.id)
 
         review.liked = kwargs.get('liked', None)
         review.bookmarked = kwargs.get('bookmarked', False)
         review.save()
 
-        cache.set(key='last_user_rec' + str(user_id), value=cocktail_id, timeout=10)
+        cache.set(key=f"last_user_recommendation-{user.id}", value=cocktail_id, timeout=10)
 
-        t1 = threading.Thread(target=utility.updateCachedUserRecOnMutate, args=(user_id, review, oldReview))
-        t1.start()
+        # Dispatch Event Listener
+        Recommender.on_review_changed(user=user, review=review, old_review=old_review)
 
         # Notice we return an instance of this mutation
         return ReviewMutation(review=review)
