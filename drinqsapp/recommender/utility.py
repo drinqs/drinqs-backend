@@ -59,7 +59,7 @@ def getRecommendationForUser(userID, getOnlyFirst):
     collaborativeRecs = collaborativeUtility.getCollabRecsforUser(userID)
     itemBasedRecs = getUserProfileOnCocktailSimilaritiesFromCacheOrDB(userID)
     #print(time.time() - start)
-    if not collaborativeRecs is None:
+    if collaborativeRecs is not None:
         scaler1 = MinMaxScaler(feature_range=(0, 1)).fit(itemBasedRecs.T)
         scaler2 = MinMaxScaler(feature_range=(0, 1)).fit(collaborativeRecs.T)
 
@@ -77,7 +77,6 @@ def getRecommendationForUser(userID, getOnlyFirst):
         itemBasedRecs.index = [userID]
         bothRecsInFrame.fillna(value=itemBasedRecs, axis=1, inplace=True)
         bothRecsInFrameWeightened = bothRecsInFrame.mul([1-weightCollaborative, weightCollaborative], axis=0)
-
         combinedRecommendations = bothRecsInFrameWeightened.sum().to_frame().transpose()
         combinedRecommendations = combinedRecommendations.sort_values(by=0, axis=1, ascending=False)
         #print(time.time() - start)
