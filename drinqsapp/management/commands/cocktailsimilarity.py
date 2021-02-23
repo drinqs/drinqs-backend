@@ -11,7 +11,7 @@ from scipy.cluster import hierarchy
 class Command(BaseCommand, ABC):
     def handle(self, *args, **kwargs):
         # Clustering of Ingredients
-        ingredient_tag_matrix = ingredient_tag_matrix()
+        ingredient_tag_matrix = compute_ingredient_tag_matrix()
         ingredient_distance_matrix = compute_condensed_distance_matrix(ingredient_tag_matrix, metric='cosine')
         clustered_ingredients = create_ingredient_clusters(
             matrix=ingredient_distance_matrix,
@@ -31,7 +31,7 @@ class Command(BaseCommand, ABC):
         cocktail_condensed_matrix.save()
 
 
-    def ingredient_tag_matrix(self):
+    def compute_ingredient_tag_matrix(self):
         '''
         Creates a matrix between all Ingredients and all IngredientTags.\n
         Columns are the IngredientTag IDs, while rows are Ingredient IDs.\n
