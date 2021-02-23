@@ -60,5 +60,5 @@ def fetch_user_recommendations(user_id, only_first=False):
                 WHERE drinqsapp_cocktail.id IN %%(cocktail_ids)s
                 ORDER BY ranks.rank DESC
             ''' % { 'ranks': ', '.join(map(lambda x: str(x), ranks)) },
-            { 'cocktail_ids': recommendations.columns.astype(int) },
+            { 'cocktail_ids': tuple(recommendations.columns.astype(int)) },
         )
