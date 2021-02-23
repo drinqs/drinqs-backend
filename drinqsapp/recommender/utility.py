@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import scipy
 import scipy.spatial
-from django.db.models import Case, When
 from django.core.cache import cache
 from drinqsapp.recommender import collaborativeUtility
 from sklearn.preprocessing import Normalizer, MinMaxScaler
@@ -78,41 +77,38 @@ def getRecommendationForUser(userID, getOnlyFirst):
         bothRecsInFrame.fillna(value=itemBasedRecs, axis=1, inplace=True)
         bothRecsInFrameWeightened = bothRecsInFrame.mul([1-weightCollaborative, weightCollaborative], axis=0)
         combinedRecommendations = bothRecsInFrameWeightened.sum().to_frame().transpose()
-        combinedRecommendations = combinedRecommendations.sort_values(by=0, axis=1, ascending=False)
+        recommendations = combinedRecommendations.sort_values(by=0, axis=1, ascending=False)
         #print(time.time() - start)
-
-        if getOnlyFirst:
-            lastRec = cache.get('last_user_rec' + str(userID))
-            if lastRec is None:
-                cocktail = Cocktail.objects.get(pk=combinedRecommendations.columns[0])
-            else:
-                if combinedRecommendations.columns[0] == lastRec:
-                    cocktail = Cocktail.objects.get(pk=combinedRecommendations.columns[1])
-                else:
-                    cocktail = Cocktail.objects.get(pk=combinedRecommendations.columns[0])
-            return cocktail
-        else:
-            intListOfIndices = combinedRecommendations.columns.astype(int)
-            preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(intListOfIndices)])
-            cocktails = Cocktail.objects.filter(pk__in=intListOfIndices).order_by(preserved)
-            return cocktails
-
     else:
-        if getOnlyFirst:
-            lastRec = cache.get('last_user_rec' + str(userID))
-            if lastRec is None:
-                cocktail = Cocktail.objects.get(pk=itemBasedRecs.columns[0])
-            else:
-                if itemBasedRecs.columns[0] == lastRec:
-                    cocktail = Cocktail.objects.get(pk=itemBasedRecs.columns[1])
-                else:
-                    cocktail = Cocktail.objects.get(pk=itemBasedRecs.columns[0])
-            return cocktail
+        recommendations = itemBasedRecs.sort_values(by=0, axis=1, ascending=False)
+
+    if getOnlyFirst:
+        lastRec = cache.get('last_user_rec' + str(userID))
+        if lastRec is None:
+            cocktail = Cocktail.objects.get(pk=recommendations.columns[0])
         else:
-            intListOfIndices = itemBasedRecs.columns.astype(int)
-            preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(intListOfIndices)])
-            cocktails = Cocktail.objects.filter(pk__in=intListOfIndices).order_by(preserved)
-            return cocktails
+            if recommendations.columns[0] == lastRec:
+                cocktail = Cocktail.objects.get(pk=recommendations.columns[1])
+            else:
+                cocktail = Cocktail.objects.get(pk=recommendations.columns[0])
+        return cocktail
+    else:
+        ranks_dataframe = recommendations.transpose()
+        ranks_dataframe.insert(loc=0, column='cocktail_id', value=recommendations.columns.astype(int))
+        # array of tuples in the manner [(cocktail_id, priority), ...]
+        ranks = list(ranks_dataframe.itertuples(index=False, name=None))
+
+        return Cocktail.objects.raw(
+            '''
+                SELECT *
+                FROM drinqsapp_cocktail
+                JOIN (VALUES %(ranks)s) AS ranks (cocktail_id, rank)
+                    ON drinqsapp_cocktail.id = ranks.cocktail_id
+                WHERE drinqsapp_cocktail.id IN %%(cocktail_ids)s
+                ORDER BY ranks.rank DESC
+            ''' % { 'ranks': ', '.join(map(lambda x: str(x), ranks)) },
+            { 'cocktail_ids': recommendations.columns.astype(int) },
+        )
 
 def updateCachedUserRecOnMutate(userID, updatedReview, oldReview=None):
     cocktailDistanceDataFrame = getCocktailSimilarityFromCacheOrDB()
