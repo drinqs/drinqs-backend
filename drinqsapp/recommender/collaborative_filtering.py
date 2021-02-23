@@ -52,7 +52,7 @@ def set_collaborative_predictions():
     prediction_set = algorithm.test(anti_set)
     predictions_data_frame = pd.DataFrame()
     for uid, iid, r_ui, est, details in prediction_set:
-        algorithm.loc[uid, iid] = est
+        predictions_data_frame.loc[uid, iid] = est
 
     cache.set(key='collaborative_predictions', value=predictions_data_frame, timeout=600)
 

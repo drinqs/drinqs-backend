@@ -5,11 +5,11 @@ from threading import Thread
 class Recommender:
     @staticmethod
     def fetch_next_cocktail(user):
-        fetch_user_recommendations(user.id, only_first=True)
+        return fetch_user_recommendations(user.id, only_first=True)
 
     @staticmethod
     def fetch_cocktails(user):
-        fetch_user_recommendations(user.id, only_first=False)
+        return fetch_user_recommendations(user.id, only_first=False)
 
     @staticmethod
     def on_review_changed(user, review, old_review=None):
