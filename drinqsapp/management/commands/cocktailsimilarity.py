@@ -7,6 +7,7 @@ import math
 import numpy as np
 import scipy
 from scipy.cluster import hierarchy
+import scipy.spatial
 
 class Command(BaseCommand, ABC):
     def handle(self, *args, **kwargs):
