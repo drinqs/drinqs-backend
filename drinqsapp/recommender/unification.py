@@ -33,7 +33,7 @@ def fetch_user_recommendations(user_id, only_first=False):
     else:
         recommendations = item_based_recommendations
 
-    recommendations.sort_values(by=0, axis=1, ascending=False)
+    recommendations = recommendations.sort_values(by=0, axis=1, ascending=False)
 
     if only_first:
         last_recommendation = cache.get(f'last_user_recommendation-{user_id}')
