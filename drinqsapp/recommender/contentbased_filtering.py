@@ -8,7 +8,7 @@ from django.core.cache import cache
 def fetch_cocktail_similarity_matrix():
     similarity_matrix_from_cache = cache.get('cocktail_similarity_matrix')
 
-    if similarity_matrix_from_cache:
+    if similarity_matrix_from_cache is not None:
         return similarity_matrix_from_cache
     else:
         cocktail_similarity_matrix_from_db = scipy.spatial.distance.squareform(CocktailCondensedMatrix.objects.latest("id").value)
@@ -34,7 +34,7 @@ def fetch_item_based_recommendations_for_user(user_id):
 
     item_based_recommendations = cache.get(f'item_based_recommendations-{user_id}')
 
-    if item_based_recommendations:
+    if item_based_recommendations is not None:
         return item_based_recommendations
     else:
         cocktail_similarity_matrix = fetch_cocktail_similarity_matrix()

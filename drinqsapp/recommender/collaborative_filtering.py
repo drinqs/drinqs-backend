@@ -33,8 +33,9 @@ def fetch_review_dataset():
 
 # Gets predictions from cache
 def fetch_collaborative_predictions():
-    if cache.get('collaborative_predictions'):
-        return cache.get('collaborative_predictions')
+    collaborative_predictions = cache.get('collaborative_predictions')
+    if collaborative_predictions is not None:
+        return collaborative_predictions
     else:
         return set_collaborative_predictions()
 
