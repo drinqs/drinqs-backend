@@ -63,9 +63,14 @@ class Command(BaseCommand, ABC):
                 .values_list('id', 'ingredient_tag_ids')
         )
 
+        ingredient_ids_in_matrix = matrix[:, 0]
+        ingredient_tag_ids_in_matrix = matrix[0, :]
+
         for ingredient_id, ingredient_tag_ids in ingredients_with_tag_ids:
+            ingredient_index = np.where(ingredient_ids_in_matrix == ingredient_id)[0][0]
             for ingredient_tag_id in ingredient_tag_ids:
-                matrix[ingredient_id, ingredient_tag_id] = 1
+                ingredient_tag_index = np.where(ingredient_tag_ids_in_matrix == ingredient_tag_id)[0][0]
+                matrix[ingredient_index, ingredient_tag_index] = 1
 
         return matrix
 
@@ -134,13 +139,16 @@ class Command(BaseCommand, ABC):
                 .order_by('id')
                 .values_list('id', 'ingredient_ids')
         )
+
+        cocktail_ids_in_matrix = matrix[:, 0]
         ingredient_ids_in_clusters = clustered_ingredients[:, 0]
 
         for cocktail_id, ingredient_ids in cocktails_with_ingredient_ids:
+            cocktail_index = np.where(cocktail_ids_in_matrix == cocktail_id)[0][0]
             for ingredient_id in ingredient_ids:
                 cluster_row_index = np.where(ingredient_ids_in_clusters == ingredient_id)[0][0]
                 cluster_id = clustered_ingredients[cluster_row_index, 1]
-                matrix[cocktail_id, cluster_id] = matrix[cocktail_id, cluster_id] + 1
+                matrix[cocktail_index, cluster_id] = matrix[cocktail_id, cluster_id] + 1
 
         return matrix
 
