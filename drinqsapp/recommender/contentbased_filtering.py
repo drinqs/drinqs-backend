@@ -123,7 +123,7 @@ def update_cache_for_content_based_recommendations(user_id, review, old_review=N
             weighted_cocktail_similarities = cocktail_similarity_matrix.loc[[review.cocktail.id]] * weight_difference
             difference = weighted_cocktail_similarities.columns.difference(content_based_recommendations.columns)
             weighted_cocktail_similarities = weighted_cocktail_similarities.drop(labels=difference, axis=1)
-            current_user_profile = current_user_profile.append(weighted_cocktail_similarities)
-            current_user_profile = current_user_profile.sum().to_frame().transpose()
+            content_based_recommendations = content_based_recommendations.append(weighted_cocktail_similarities)
+            content_based_recommendations = content_based_recommendations.sum().to_frame().transpose()
 
-            cache.set(key=f'content_based_recommendations-{user_id}', value=current_user_profile, timeout=300)
+            cache.set(key=f'content_based_recommendations-{user_id}', value=content_based_recommendations, timeout=300)
