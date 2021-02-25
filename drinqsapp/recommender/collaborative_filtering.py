@@ -52,8 +52,8 @@ def set_collaborative_recommendations():
     anti_set = trainset.build_anti_testset()
     recommendation_set = algorithm.test(anti_set)
     recommendations_data_frame = pd.DataFrame()
-    for uid, iid, r_ui, est, details in recommendation_set:
-        recommendations_data_frame.loc[uid, iid] = est
+    for user_id, cocktail_id, true_rating, estimated_rating, details in recommendation_set:
+        recommendations_data_frame.loc[user_id, cocktail_id] = estimated_rating
 
     cache.set(key='collaborative_recommendations', value=recommendations_data_frame, timeout=600)
 
