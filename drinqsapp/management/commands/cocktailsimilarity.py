@@ -172,7 +172,7 @@ class Command(BaseCommand, ABC):
         def magnitude(vector):
             return math.sqrt(np.dot(vector, vector))
 
-        def inverse_cosine_distance(a, b):
+        def cosine_similarity(a, b):
             result = magnitude(a) * magnitude(b)
             if result == 0:
                 return 0
@@ -181,8 +181,7 @@ class Command(BaseCommand, ABC):
 
         cocktail_ingredient_cluster_matrix = self.__create_cocktail_ingredient_cluster_matrix(clustered_ingredients)
 
-        # distance with inverse cosine distance = cosine similarity
-        condensed_cocktail_similarity_matrix = self.__compute_condensed_distance_matrix(cocktail_ingredient_cluster_matrix, metric=inverse_cosine_distance)
+        condensed_cocktail_similarity_matrix = self.__compute_condensed_distance_matrix(cocktail_ingredient_cluster_matrix, metric=cosine_similarity)
         cocktail_similarity_matrix = scipy.spatial.distance.squareform(condensed_cocktail_similarity_matrix)
 
         cocktail_similarity_matrix_with_ids = np.r_[np.transpose(cocktail_ingredient_cluster_matrix[1:, :1]), cocktail_similarity_matrix]
