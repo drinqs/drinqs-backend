@@ -23,7 +23,7 @@ def fetch_cocktail_similarity_matrix():
 
         return cocktail_similarity_matrix
 
-def fetch_item_based_recommendations_for_user(user_id):
+def fetch_content_based_recommendations_for_user(user_id):
     '''
     Returns a vector with a length of the amount of all unrated cocktails with the sum of the
     weighted similarites of the already rated cocktails.
@@ -32,10 +32,10 @@ def fetch_item_based_recommendations_for_user(user_id):
     disliked, added or removed from bookmarks.
     '''
 
-    item_based_recommendations = cache.get(f'item_based_recommendations-{user_id}')
+    content_based_recommendations = cache.get(f'content_based_recommendations-{user_id}')
 
-    if item_based_recommendations is not None:
-        return item_based_recommendations
+    if content_based_recommendations is not None:
+        return content_based_recommendations
     else:
         cocktail_similarity_matrix = fetch_cocktail_similarity_matrix()
         weighted_cocktail_similarities = []
@@ -55,23 +55,23 @@ def fetch_item_based_recommendations_for_user(user_id):
             weighted_cocktail_similarities.append(weighted_cocktail_similarities_for_current_cocktail)
             reviewed_cocktail_ids.append(review.cocktail_id)
 
-        item_based_recommendations = pd.concat(weighted_cocktail_similarities)
+        content_based_recommendations = pd.concat(weighted_cocktail_similarities)
         # drop columns for already reviewed IDs
-        item_based_recommendations = item_based_recommendations.drop(labels=reviewed_cocktail_ids, axis=1)
+        content_based_recommendations = content_based_recommendations.drop(labels=reviewed_cocktail_ids, axis=1)
         # compute sum of similarities of all unrated cocktails for each already rated cocktails
-        item_based_recommendations = item_based_recommendations.sum().to_frame().transpose()
-        cache.set(key=f'user_recommendation-{user_id}', value=item_based_recommendations, timeout=300)
+        content_based_recommendations = content_based_recommendations.sum().to_frame().transpose()
+        cache.set(key=f'content_based_recommendations-{user_id}', value=content_based_recommendations, timeout=300)
 
-        return item_based_recommendations
+        return content_based_recommendations
 
-def update_cache_for_item_based_recommendations(user_id, review, old_review=None):
+def update_cache_for_content_based_recommendations(user_id, review, old_review=None):
     '''
     Updates the weighted cocktail similarities vector (of item based recommendations)
     for the updated review's cocktail.
     '''
 
     cocktail_similarity_matrix = fetch_cocktail_similarity_matrix()
-    item_based_recommendations = fetch_item_based_recommendations_for_user(user_id)
+    content_based_recommendations = fetch_content_based_recommendations_for_user(user_id)
 
     if old_review is None:
         if review.liked == False:
@@ -85,15 +85,15 @@ def update_cache_for_item_based_recommendations(user_id, review, old_review=None
 
         weighted_cocktail_similarities = cocktail_similarity_matrix.loc[[review.cocktail.id]] * weight
 
-        if weighted_cocktail_similarities.index[0] in item_based_recommendations.columns:
-            difference = weighted_cocktail_similarities.columns.difference(item_based_recommendations.columns)
+        if weighted_cocktail_similarities.index[0] in content_based_recommendations.columns:
+            difference = weighted_cocktail_similarities.columns.difference(content_based_recommendations.columns)
             weighted_cocktail_similarities = weighted_cocktail_similarities.drop(labels=difference, axis=1)
 
-            item_based_recommendations = item_based_recommendations.append(weighted_cocktail_similarities)
-            item_based_recommendations = item_based_recommendations.sum().to_frame().transpose()
-            item_based_recommendations = item_based_recommendations.drop(labels=review.cocktail.id, axis=1)
+            content_based_recommendations = content_based_recommendations.append(weighted_cocktail_similarities)
+            content_based_recommendations = content_based_recommendations.sum().to_frame().transpose()
+            content_based_recommendations = content_based_recommendations.drop(labels=review.cocktail.id, axis=1)
 
-            cache.set(key=f'user_recommendation-{user_id}', value=item_based_recommendations, timeout=180)
+            cache.set(key=f'content_based_recommendations-{user_id}', value=content_based_recommendations, timeout=180)
     else:
         if review.liked == False:
             new_review_weight = -0.5
@@ -121,9 +121,9 @@ def update_cache_for_item_based_recommendations(user_id, review, old_review=None
 
         if not weight_difference == 0:
             weighted_cocktail_similarities = cocktail_similarity_matrix.loc[[review.cocktail.id]] * weight_difference
-            difference = weighted_cocktail_similarities.columns.difference(item_based_recommendations.columns)
+            difference = weighted_cocktail_similarities.columns.difference(content_based_recommendations.columns)
             weighted_cocktail_similarities = weighted_cocktail_similarities.drop(labels=difference, axis=1)
-            currentUserProfile = currentUserProfile.append(weighted_cocktail_similarities)
-            currentUserProfile = currentUserProfile.sum().to_frame().transpose()
+            current_user_profile = current_user_profile.append(weighted_cocktail_similarities)
+            current_user_profile = current_user_profile.sum().to_frame().transpose()
 
-            cache.set(key=f'user_recommendation_profile-{user_id}', value=currentUserProfile, timeout=300)
+            cache.set(key=f'content_based_recommendations-{user_id}', value=current_user_profile, timeout=300)

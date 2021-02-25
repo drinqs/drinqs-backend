@@ -31,17 +31,17 @@ def fetch_review_dataset():
     return Dataset.load_from_df(data_frame[["user_id", "cocktail_id", "rating"]], reader)
 
 
-# Gets predictions from cache
-def fetch_collaborative_predictions():
-    collaborative_predictions = cache.get('collaborative_predictions')
-    if collaborative_predictions is not None:
-        return collaborative_predictions
+# Gets recommendations from cache
+def fetch_collaborative_recommendations():
+    collaborative_recommendations = cache.get('collaborative_recommendations')
+    if collaborative_recommendations is not None:
+        return collaborative_recommendations
     else:
-        return set_collaborative_predictions()
+        return set_collaborative_recommendations()
 
 
-# Sets the collaborative predictions to cache.
-def set_collaborative_predictions():
+# Sets the collaborative recommendations to cache.
+def set_collaborative_recommendations():
     review_dataset = fetch_review_dataset()
     trainset = review_dataset.build_full_trainset()
 
@@ -50,28 +50,26 @@ def set_collaborative_predictions():
     algorithm.fit(trainset)
     # Predict ratings for cocktails that are NOT in the training set.
     anti_set = trainset.build_anti_testset()
-    prediction_set = algorithm.test(anti_set)
-    predictions_data_frame = pd.DataFrame()
-    for uid, iid, r_ui, est, details in prediction_set:
-        predictions_data_frame.loc[uid, iid] = est
+    recommendation_set = algorithm.test(anti_set)
+    recommendations_data_frame = pd.DataFrame()
+    for uid, iid, r_ui, est, details in recommendation_set:
+        recommendations_data_frame.loc[uid, iid] = est
 
-    cache.set(key='collaborative_predictions', value=predictions_data_frame, timeout=600)
+    cache.set(key='collaborative_recommendations', value=recommendations_data_frame, timeout=600)
 
-    return predictions_data_frame
+    return recommendations_data_frame
 
 
-# Return predictions for a certain user
+# Return recommendations for a certain user
 def fetch_collaborative_recommendations_for_user(user_id):
     '''Return the top cocktail_id for a user.'''
 
-    predictions = fetch_collaborative_predictions()
+    recommendations = fetch_collaborative_recommendations()
 
     try:
-        predOfUser = predictions.loc[[user_id]].dropna(axis=1)
+        return recommendations.loc[[user_id]].dropna(axis=1)
     except:
-        predOfUser = None
-
-    return predOfUser
+        return None
 
 
 def rating_history(username):

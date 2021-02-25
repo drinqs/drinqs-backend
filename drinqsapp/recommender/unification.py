@@ -1,37 +1,37 @@
 from .collaborative_filtering import fetch_collaborative_recommendations_for_user
-from .contentbased_filtering import fetch_item_based_recommendations_for_user
+from .contentbased_filtering import fetch_content_based_recommendations_for_user
 from django.core.cache import cache
 from drinqsapp.models import Review, Cocktail
 from sklearn.preprocessing import Normalizer, MinMaxScaler
 
 def fetch_user_recommendations(user_id, only_first=False):
     collaborative_recommendations = fetch_collaborative_recommendations_for_user(user_id)
-    item_based_recommendations = fetch_item_based_recommendations_for_user(user_id)
+    content_based_recommendations = fetch_content_based_recommendations_for_user(user_id)
 
     if collaborative_recommendations is not None:
-        transposed_item_based_recommendations = item_based_recommendations.T
+        transposed_content_based_recommendations = content_based_recommendations.T
         transposed_collaborative_recommendations = collaborative_recommendations.T
 
         # fit values in range between 0 and 1 to make them unifiable
-        item_based_scaler = MinMaxScaler(feature_range=(0, 1)).fit(transposed_item_based_recommendations)
+        item_based_scaler = MinMaxScaler(feature_range=(0, 1)).fit(transposed_content_based_recommendations)
         collaborative_filtering_scaler = MinMaxScaler(feature_range=(0, 1)).fit(transposed_collaborative_recommendations)
 
-        item_based_recommendations.iloc[:,:] = item_based_scaler.transform(transposed_item_based_recommendations).T
+        content_based_recommendations.iloc[:,:] = item_based_scaler.transform(transposed_content_based_recommendations).T
         collaborative_recommendations.iloc[:,:] = collaborative_filtering_scaler.transform(transposed_collaborative_recommendations).T
 
         review_count = Review.objects.filter(user_id=user_id).count()
         weight_for_collaborative_filtering = (min((review_count / 180), 0.6))
 
-        unified_recommendations = item_based_recommendations.append(collaborative_recommendations)
-        item_based_recommendations.index = [user_id]
-        unified_recommendations.fillna(value=item_based_recommendations, axis=1, inplace=True)
+        unified_recommendations = content_based_recommendations.append(collaborative_recommendations)
+        content_based_recommendations.index = [user_id]
+        unified_recommendations.fillna(value=content_based_recommendations, axis=1, inplace=True)
         unified_recommendations = unified_recommendations.mul(
             [1 - weight_for_collaborative_filtering, weight_for_collaborative_filtering],
             axis=0,
         )
         recommendations = unified_recommendations.sum().to_frame().transpose()
     else:
-        recommendations = item_based_recommendations
+        recommendations = content_based_recommendations
 
     recommendations = recommendations.sort_values(by=0, axis=1, ascending=False)
 
