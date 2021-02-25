@@ -62,7 +62,7 @@ def set_collaborative_recommendations():
 
 # Return recommendations for a certain user
 def fetch_collaborative_recommendations_for_user(user_id):
-    '''Return the top cocktail_id for a user.'''
+    '''Return the top cocktails for a user based on the rating of other users.'''
 
     recommendations = fetch_collaborative_recommendations()
 
