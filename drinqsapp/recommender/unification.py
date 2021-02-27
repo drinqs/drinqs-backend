@@ -4,6 +4,7 @@ from django.core.cache import cache
 from drinqsapp.models import Review, Cocktail
 from sklearn.preprocessing import Normalizer, MinMaxScaler
 
+
 def fetch_user_recommendations(user_id, only_first=False):
     collaborative_recommendations = fetch_collaborative_recommendations_for_user(user_id)
     content_based_recommendations = fetch_content_based_recommendations_for_user(user_id)
@@ -12,12 +13,15 @@ def fetch_user_recommendations(user_id, only_first=False):
         transposed_content_based_recommendations = content_based_recommendations.T
         transposed_collaborative_recommendations = collaborative_recommendations.T
 
-        # fit values in range between 0 and 1 to make them unifiable
+        # Rescale values in range between 0 and 1 to make them unifiable
         item_based_scaler = MinMaxScaler(feature_range=(0, 1)).fit(transposed_content_based_recommendations)
-        collaborative_filtering_scaler = MinMaxScaler(feature_range=(0, 1)).fit(transposed_collaborative_recommendations)
+        collaborative_filtering_scaler = MinMaxScaler(feature_range=(0, 1))\
+            .fit(transposed_collaborative_recommendations)
 
-        content_based_recommendations.iloc[:,:] = item_based_scaler.transform(transposed_content_based_recommendations).T
-        collaborative_recommendations.iloc[:,:] = collaborative_filtering_scaler.transform(transposed_collaborative_recommendations).T
+        content_based_recommendations.iloc[:,:] = item_based_scaler\
+            .transform(transposed_content_based_recommendations).T
+        collaborative_recommendations.iloc[:,:] = collaborative_filtering_scaler\
+            .transform(transposed_collaborative_recommendations).T
 
         review_count = Review.objects.filter(user_id=user_id).count()
         weight_for_collaborative_filtering = (min((review_count / 180), 0.6))
