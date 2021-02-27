@@ -1,18 +1,22 @@
 # imports
 import pandas as pd
+
 # Django imports
 from django.core.cache import cache
 from django.db.models import Subquery
+
 # Surprise: https://surprise.readthedocs.io/en/stable/
 from surprise import *
+
+# Own imports
 from drinqsapp.models import Review, User, Cocktail
 
 
 def fetch_review_dataset():
-    '''
+    """
     Returns a surprise `Dataset` containing user_id, cocktail_id,
     and rating for each review in the database.
-    '''
+    """
 
     data_frame = pd.DataFrame(columns=["user_id", "cocktail_id", "rating"])
 
@@ -62,7 +66,7 @@ def set_collaborative_recommendations():
 
 # Return recommendations for a certain user
 def fetch_collaborative_recommendations_for_user(user_id):
-    '''Return the top cocktails for a user based on the rating of other users.'''
+    """Return the top cocktails for a user based on the rating of other users."""
 
     recommendations = fetch_collaborative_recommendations()
 
@@ -73,9 +77,9 @@ def fetch_collaborative_recommendations_for_user(user_id):
 
 
 def rating_history(username):
-    '''
+    """
     Returns the already rated cocktails of a given user, inspired by https://www.jiristodulka.com/post/recsys_cf/
-    '''
+    """
 
     user = User.objects.get(username=username)
     print(f'User <{user.username}> has already rated {user.review_set.count()} movies.')

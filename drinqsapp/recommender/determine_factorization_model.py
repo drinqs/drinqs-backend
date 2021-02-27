@@ -15,14 +15,16 @@ AVAILABLE_ALGORITHMS = [
     KNNWithMeans(), KNNWithZScore(), BaselineOnly(), CoClustering(),
 ]
 
+
 # Code inspired by
 # https://towardsdatascience.com/building-and-testing-recommender-systems-with-surprise-step-by-step-d4ba702ef80b
 
+
 def create_review_dataset():
-    '''
+    """
     Returns a surprise `Dataset` containing user_id, cocktail_id,
     and rating for each review in the database.
-    '''
+    """
 
     data_frame = pd.DataFrame(columns=["user_id", "cocktail_id", "rating"])
 
@@ -41,12 +43,12 @@ def create_review_dataset():
 
     return data
 
+
 def compare_all_algorithms(data):
-    '''
-    General comparision of performance of diff algorithms,
+    """General comparision of performance of diff algorithms,
     `cross_validate` prints fitting time, prediction time and
     the RMSE.
-    '''
+    """
 
     benchmark = []
 
@@ -62,20 +64,22 @@ def compare_all_algorithms(data):
     benchmark = pd.DataFrame(benchmark).set_index('Algorithm').sort_values('test_rmse')
     print(benchmark)
 
+
 def compare_best_algorithms(data):
-    '''
+    """
     Based on results from `compare_all_algorithms`, take a closer look
-    '''
+    """
 
     cross_validate(BaselineOnly(), data, measures=['RMSE'], cv=5, verbose=True)
     cross_validate(SVDpp(), data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
     cross_validate(SVD(), data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
 
-def apply_grid_search(data):
-    '''
-    SVD was chosen as a prediction algorithm generally tune it
-    '''
 
+def apply_grid_search(data):
+    """
+    SVD was chosen as a prediction algorithm, generally tune it
+    """
+    # Further analysis see Jupyter Notebook "Matrix_Factorization_Notebook"
     # Gridsearch
     param_grid = {
         'reg_all': [0.02, 0.002],
@@ -94,6 +98,7 @@ def apply_grid_search(data):
     # combination of parameters that gave the best RMSE score
     algorithm = grid_search.best_estimator['rmse']
     cross_validate(algorithm, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
+
 
 # check how good our predictions actually are
 def check_with_test_set(data):
@@ -117,8 +122,3 @@ def check_with_test_set(data):
 
     median = data_frame.sort_values(by='err').median(axis=0)
     print(median)
-
-
-
-
-

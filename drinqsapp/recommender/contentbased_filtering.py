@@ -1,9 +1,15 @@
-from drinqsapp.models import Cocktail, CocktailCondensedMatrix, Review
+# Own imports
+from drinqsapp.models import CocktailCondensedMatrix, Review
+
+# Methodological imports
 import numpy as np
 import pandas as pd
 import scipy
 import scipy.spatial
+
+# Django imports
 from django.core.cache import cache
+
 
 def fetch_cocktail_similarity_matrix():
     similarity_matrix_from_cache = cache.get('cocktail_similarity_matrix')
@@ -23,14 +29,15 @@ def fetch_cocktail_similarity_matrix():
 
         return cocktail_similarity_matrix
 
+
 def fetch_content_based_recommendations_for_user(user_id):
-    '''
+    """
     Returns a vector with a length of the amount of all unrated cocktails with the sum of the
     weighted similarites of the already rated cocktails.
     The labels of the vector's values correspond to cocktail IDs\n
     The weight is determined by whether the already rated cocktails are liked,
     disliked, added or removed from bookmarks.
-    '''
+    """
 
     content_based_recommendations = cache.get(f'content_based_recommendations-{user_id}')
 
@@ -64,11 +71,12 @@ def fetch_content_based_recommendations_for_user(user_id):
 
         return content_based_recommendations
 
+
 def update_cache_for_content_based_recommendations(user_id, review, old_review=None):
-    '''
+    """
     Updates the weighted cocktail similarities vector (of item based recommendations)
     for the updated review's cocktail.
-    '''
+    """
 
     cocktail_similarity_matrix = fetch_cocktail_similarity_matrix()
     content_based_recommendations = fetch_content_based_recommendations_for_user(user_id)
