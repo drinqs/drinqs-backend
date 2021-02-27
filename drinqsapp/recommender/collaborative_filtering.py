@@ -12,6 +12,7 @@ from surprise import *
 from drinqsapp.models import Review, User, Cocktail
 
 
+
 def fetch_review_dataset():
     """
     Returns a surprise `Dataset` containing user_id, cocktail_id,
@@ -72,7 +73,7 @@ def fetch_collaborative_recommendations_for_user(user_id):
 
     try:
         return recommendations.loc[[user_id]].dropna(axis=1)
-    except:
+    except TypeError:
         return None
 
 

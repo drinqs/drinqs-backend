@@ -1,8 +1,14 @@
+# Own imports
 from .collaborative_filtering import fetch_collaborative_recommendations_for_user
 from .contentbased_filtering import fetch_content_based_recommendations_for_user
+
+# Django imports
 from django.core.cache import cache
 from drinqsapp.models import Review, Cocktail
-from sklearn.preprocessing import Normalizer, MinMaxScaler
+
+
+# Others
+from sklearn.preprocessing import  MinMaxScaler
 
 
 def fetch_user_recommendations(user_id, only_first=False):
