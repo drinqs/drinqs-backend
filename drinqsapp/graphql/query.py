@@ -2,12 +2,9 @@
 from graphene_django import DjangoObjectType, DjangoConnectionField
 from graphql_jwt.decorators import login_required, staff_member_required
 import graphene
-from drinqsapp.recommender import utility
-
-
-
 import drinqsapp.graphql.types as types
 import drinqsapp.models as models
+from drinqsapp.recommender import Recommender
 
 class Query(graphene.ObjectType):
     cocktails = graphene.relay.ConnectionField(types.CocktailConnection)
@@ -32,15 +29,13 @@ class Query(graphene.ObjectType):
     recommended_cocktails = graphene.relay.ConnectionField(types.CocktailConnection)
     @login_required
     def resolve_recommended_cocktails(self, info, **args):
-        recommendations = utility.getRecommendationForUser(userID=info.context.user.id, getOnlyFirst=False)
-        return recommendations
+        return Recommender.fetch_cocktails(info.context.user)
 
     next_cocktail = graphene.Field(types.Cocktail)
     @login_required
     def resolve_next_cocktail(self, info):
         try:
-            recommendation = utility.getRecommendationForUser(userID=info.context.user.id, getOnlyFirst=True)
-            return recommendation
+            return Recommender.fetch_next_cocktail(info.context.user)
         except models.Cocktail.DoesNotExist:
             return None
 
