@@ -1,13 +1,14 @@
 from abc import ABC
-from django.core.management.base import BaseCommand
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Q
-from drinqsapp.models import Ingredient, IngredientTag, Cocktail, CocktailCondensedMatrix
 import math
 import numpy as np
 import scipy
 from scipy.cluster import hierarchy
 import scipy.spatial
+from django.core.management.base import BaseCommand
+from django.contrib.postgres.aggregates import ArrayAgg
+from django.db.models import Q
+from drinqsapp.models import Ingredient, IngredientTag, Cocktail, CocktailCondensedMatrix
+
 
 class Command(BaseCommand, ABC):
     def handle(self, *args, **kwargs):
@@ -17,8 +18,6 @@ class Command(BaseCommand, ABC):
         clustered_ingredients = self.__create_ingredient_clusters(
             matrix=ingredient_distance_matrix,
             method='ward',
-            threshold=1.2,
-            metric='cosine',
             criterion='distance',
             with_ids=True,
         )
@@ -53,14 +52,14 @@ class Command(BaseCommand, ABC):
 
         ingredients_with_tag_ids = list(
             Ingredient.objects
-                .annotate(
-                    ingredient_tag_ids=ArrayAgg(
+            .annotate(
+                ingredient_tag_ids=ArrayAgg(
                         'ingredient_tags__id',
                         filter=~Q(ingredient_tags__id=None)
                     )
                 )
-                .order_by('id')
-                .values_list('id', 'ingredient_tag_ids')
+            .order_by('id')
+            .values_list('id', 'ingredient_tag_ids')
         )
 
         ingredient_ids_in_matrix = matrix[:, 0]
@@ -86,7 +85,7 @@ class Command(BaseCommand, ABC):
         And returns thie 1-dimesnional condensed matrix.
         '''
 
-        just_values = matrix[1:,1:]
+        just_values = matrix[1:, 1:]
         condensed_matrix = scipy.spatial.distance.pdist(just_values, metric=metric)
         for i in range(0, len(condensed_matrix)):
             if not np.isfinite(condensed_matrix[i]):
@@ -94,7 +93,9 @@ class Command(BaseCommand, ABC):
         return condensed_matrix
 
 
-    def __create_ingredient_clusters(self, matrix, method, threshold, metric, criterion, with_ids=False):
+    def __create_ingredient_clusters(self, matrix, method, criterion, with_ids=False):
+        threshold = 1.2
+        metric = 'cosine'
         cluster_method = hierarchy.linkage(matrix, method=method, metric=metric)
         cluster_result = hierarchy.fcluster(cluster_method, threshold, criterion=criterion)
 
@@ -104,8 +105,7 @@ class Command(BaseCommand, ABC):
             for index, ingredient_id in enumerate(ingredient_ids):
                 cluster_with_ids[index, 0] = ingredient_id
             return cluster_with_ids
-        else:
-            return cluster_result
+        return cluster_result
 
     def __create_cocktail_ingredient_cluster_matrix(self, clustered_ingredients):
         '''
@@ -130,14 +130,14 @@ class Command(BaseCommand, ABC):
 
         cocktails_with_ingredient_ids = list(
             Cocktail.objects
-                .annotate(
-                    ingredient_ids=ArrayAgg(
+            .annotate(
+                ingredient_ids=ArrayAgg(
                         'ingredients__id',
                         filter=~Q(ingredients__id=None)
                     )
                 )
-                .order_by('id')
-                .values_list('id', 'ingredient_ids')
+            .order_by('id')
+            .values_list('id', 'ingredient_ids')
         )
 
         cocktail_ids_in_matrix = matrix[:, 0]
@@ -172,12 +172,11 @@ class Command(BaseCommand, ABC):
         def magnitude(vector):
             return math.sqrt(np.dot(vector, vector))
 
-        def cosine_similarity(a, b):
-            result = magnitude(a) * magnitude(b)
+        def cosine_similarity(first, second):
+            result = magnitude(first) * magnitude(second)
             if result == 0:
                 return 0
-            else:
-                return np.dot(a, b) / result
+            return np.dot(first, second) / result
 
         cocktail_ingredient_cluster_matrix = self.__create_cocktail_ingredient_cluster_matrix(clustered_ingredients)
 
