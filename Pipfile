@@ -28,6 +28,7 @@ django-utils-six = "*"
 djangorestframework = "*"
 django-request-logging = "*"
 djangorestframework-camel-case = "*"
+django-redis = "*"
 
 [dev-packages]
 
