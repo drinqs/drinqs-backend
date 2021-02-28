@@ -1,3 +1,4 @@
+# pylint: skip-file
 import functools
 import glob
 import gzip
