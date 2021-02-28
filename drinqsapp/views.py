@@ -41,7 +41,7 @@ def token_auth(request):
     })
 
 @api_view(['POST'])
-def refresh_token(request):
+def generate_refresh_token(request):
     refresh_token = request.data.get('refreshToken', '')
     if not refresh_token:
         return Response({'error': 'Refresh token is required'})
