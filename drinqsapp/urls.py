@@ -27,7 +27,6 @@ from drinqsapp.schema import schema
 from . import views
 
 urlpatterns = [
-    # TODO remove
     path('', admin.site.urls),
     # path for healtcheck (needed for production deployment)
     path('.well-known/health_check', views.healthcheck, name='healthcheck'),

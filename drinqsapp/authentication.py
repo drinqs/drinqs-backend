@@ -16,26 +16,26 @@ class TokenAuthentication(BaseAuthentication):
         if len(auth) == 1:
             msg = 'Invalid token header. No credentials provided.'
             raise exceptions.AuthenticationFailed(msg)
-        elif len(auth) > 2:
+        if len(auth) > 2:
             msg = 'Invalid token header. Token string should not contain spaces.'
             raise exceptions.AuthenticationFailed(msg)
 
         try:
             token = auth[1].decode()
-        except UnicodeError:
+        except UnicodeError as unicode_error:
             msg = 'Invalid token header. Token string should not contain invalid characters.'
-            raise exceptions.AuthenticationFailed(msg)
+            raise exceptions.AuthenticationFailed(msg) from unicode_error
 
         try:
             payload = get_payload(token)
             user = get_user_by_payload(payload)
-        except JSONWebTokenError as e:
-            raise exceptions.AuthenticationFailed(str(e))
+        except JSONWebTokenError as exception:
+            raise exceptions.AuthenticationFailed(str(exception)) from exception
 
         if user is None or not user.is_active:
             raise exceptions.AuthenticationFailed('User inactive or deleted.')
 
         return (user, None)
 
-    def authenticate_header(self, request):
+    def authenticate_header(self, _request):
         return self.keyword
