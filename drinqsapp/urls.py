@@ -34,6 +34,6 @@ urlpatterns = [
     path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
     # REST user paths
     path('api/auth/login', views.token_auth, name='token_auth'),
-    path('api/auth/refresh', views.refresh_token, name='refresh_token'),
+    path('api/auth/refresh', views.generate_refresh_token, name='refresh_token'),
     path('api/auth/user', views.current_user, name='current_user'),
 ]

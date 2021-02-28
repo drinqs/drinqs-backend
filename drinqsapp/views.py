@@ -12,7 +12,7 @@ from drinqsapp.serializers import UserSerializer
 from drinqsapp.authentication import TokenAuthentication
 
 # Create your views here.
-def healthcheck(request):
+def healthcheck(_request):
     return HttpResponse("ok")
 
 @api_view(['POST'])
@@ -41,7 +41,7 @@ def token_auth(request):
     })
 
 @api_view(['POST'])
-def refresh_token(request):
+def generate_refresh_token(request):
     refresh_token = request.data.get('refreshToken', '')
     if not refresh_token:
         return Response({'error': 'Refresh token is required'})
