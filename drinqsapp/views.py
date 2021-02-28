@@ -12,7 +12,7 @@ from drinqsapp.serializers import UserSerializer
 from drinqsapp.authentication import TokenAuthentication
 
 # Create your views here.
-def healthcheck(request):
+def healthcheck(_request):
     return HttpResponse("ok")
 
 @api_view(['POST'])
