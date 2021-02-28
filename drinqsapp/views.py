@@ -1,18 +1,15 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import AnonymousUser
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
-from drinqsapp.authentication import TokenAuthentication
-from drinqsapp.serializers import UserSerializer
+from django.http import HttpResponse
 from graphql_jwt import signals
-from graphql_jwt.decorators import on_token_auth_resolve
 from graphql_jwt.utils import jwt_payload, jwt_encode
 from graphql_jwt.refresh_token import signals as refresh_signals
-from graphql_jwt.refresh_token.shortcuts import create_refresh_token, get_refresh_token, refresh_token_lazy
+from graphql_jwt.refresh_token.shortcuts import get_refresh_token, refresh_token_lazy
 from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from drinqsapp.serializers import UserSerializer
+from drinqsapp.authentication import TokenAuthentication
 
 # Create your views here.
 def healthcheck(request):
