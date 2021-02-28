@@ -18,18 +18,6 @@ services:
       - "8000:8000"
       - "4000:4000"
 
-  # assets:
-  #   build:
-  #     context: .
-  #     target: assets
-  #     args:
-  #       ENV: dev
-  #   depends_on:
-  #     - sync
-  #   ports:
-  #     - "4001:4001"
-  #   command: sh -c "yarn install && yarn run watch"
-
   db:
     image: postgres:10.3-alpine
     environment:

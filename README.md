@@ -3,6 +3,7 @@
 ## Prerequisites
 
 Docker
+Docker-Compose
 
 ## Build Setup
 
