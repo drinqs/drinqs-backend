@@ -148,7 +148,7 @@ class Command(BaseCommand, ABC):
             for ingredient_id in ingredient_ids:
                 cluster_row_index = np.where(ingredient_ids_in_clusters == ingredient_id)[0][0]
                 cluster_id = clustered_ingredients[cluster_row_index, 1]
-                matrix[cocktail_index, cluster_id] = matrix[cocktail_id, cluster_id] + 1
+                matrix[cocktail_index, cluster_id] = matrix[cocktail_index, cluster_id] + 1
 
         return matrix
 
