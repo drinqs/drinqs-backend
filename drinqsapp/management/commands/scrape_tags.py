@@ -1,19 +1,17 @@
 from abc import ABC
+import pandas as pd
 import requests
 from django.core.management.base import BaseCommand
 from drinqsapp.models import Ingredient, IngredientTag
-from re import search
-import numpy as np
-import pandas as pd
 
 
-def getAllTags(self):
+def get_all_tags(self):
 
-    drinkcategoriesCSV = pd.read_csv("data/drinkCategories.csv")
-    drinkcategoriesList = drinkcategoriesCSV["0"]
+    drinkcategories_csv = pd.read_csv("data/drinkCategories.csv")
+    drinkcategories_list = drinkcategories_csv["0"]
 
-    foodcategoriesCSV = pd.read_csv("data/foodCategories.csv")
-    foodcategoriesList = foodcategoriesCSV["0"]
+    foodcategories_csv = pd.read_csv("data/foodCategories.csv")
+    foodcategories_list = foodcategories_csv["0"]
 
     for ingredient in Ingredient.objects.all():
         url = 'https://en.wikipedia.org/w/api.php'
@@ -31,14 +29,14 @@ def getAllTags(self):
         print(data[1])
         if data[1]:
             print('iterate over search result...')
-            for searchResult in data[1]:
-                print('try... ' + searchResult)
+            for search_result in data[1]:
+                print('try... ' + search_result)
                 params = dict(
                     format='json',
                     action='query',
                     prop='categories',
                     cllimit='max',
-                    titles=searchResult,
+                    titles=search_result,
                     redirects='true',
                 )
 
@@ -50,29 +48,29 @@ def getAllTags(self):
                         if "categories" in data["query"]["pages"][page]:
                             for category in data["query"]["pages"][page]["categories"]:
                                 print(category["title"])
-                                if category["title"] in drinkcategoriesList.values \
-                                    or category["title"] in foodcategoriesList.values:
+                                if category["title"] in drinkcategories_list.values \
+                                    or category["title"] in foodcategories_list.values:
                                     print("is in list!")
-                                    c = category["title"].replace("Category:","")
-                                    if len(c) < 127:
-                                        ingredient.ingredient_tags.add(IngredientTag.objects.get_or_create(name=c)[0])
-                                        print(c + " --- saved into DB")
+                                    cat = category["title"].replace("Category:","")
+                                    if len(cat) < 127:
+                                        ingredient.ingredient_tags.add(IngredientTag.objects.get_or_create(name=cat)[0])
+                                        print(cat + " --- saved into DB")
 
         else:
-            splitString = ingredient.name.split()
-            searchSplit = []
-            print('Try to search for SPLIT ingredient...' + str(splitString))
-            if len(splitString) > 2:
-                tempString = splitString.copy()
-                del tempString[0]
-                withoutFirst = ' '.join(tempString)
-                tempString = splitString.copy()
-                del tempString[-1]
-                withoutLast = ' '.join(tempString)
-                searchSplit.append(withoutFirst)
-                searchSplit.append(withoutLast)
+            split_string = ingredient.name.split()
+            search_split = []
+            print('Try to search for SPLIT ingredient...' + str(split_string))
+            if len(split_string) > 2:
+                temp_string = split_string.copy()
+                del temp_string[0]
+                without_first = ' '.join(temp_string)
+                temp_string = split_string.copy()
+                del temp_string[-1]
+                without_last = ' '.join(temp_string)
+                search_split.append(without_first)
+                search_split.append(without_last)
 
-            for split in searchSplit:
+            for split in search_split:
                 print('split:' + split)
                 params = dict(
                     format='json',
@@ -86,14 +84,14 @@ def getAllTags(self):
                 print(data[1])
                 print('iterate over splitted search result...')
                 if data[1]:
-                    for searchResult in data[1]:
-                        print('try... ' + searchResult)
+                    for search_result in data[1]:
+                        print('try... ' + search_result)
                         params = dict(
                             format='json',
                             action='query',
                             prop='categories',
                             cllimit='max',
-                            titles=searchResult,
+                            titles=search_result,
                             redirects='true',
                         )
                         resp = requests.get(url=url, params=params)
@@ -104,21 +102,21 @@ def getAllTags(self):
                                 if "categories" in data["query"]["pages"][page]:
                                     for category in data["query"]["pages"][page]["categories"]:
                                         print(category["title"])
-                                        if category["title"] in drinkcategoriesList.values or category[
-                                            "title"] in foodcategoriesList.values:
+                                        if category["title"] in drinkcategories_list.values or category[
+                                                "title"] in foodcategories_list.values:
                                             print("is in list!")
-                                            c = category["title"].replace("Category:", "")
-                                            if len(c) < 127:
+                                            cat = category["title"].replace("Category:", "")
+                                            if len(cat) < 127:
                                                 ingredient.ingredient_tags.add(
-                                                    IngredientTag.objects.get_or_create(name=c)[0])
-                                                print(c + " --- saved into DB")
+                                                    IngredientTag.objects.get_or_create(name=cat)[0])
+                                                print(cat + " --- saved into DB")
 
     for ingredient in Ingredient.objects.filter(ingredient_tags__isnull=True):
         url = 'https://en.wikipedia.org/w/api.php'
-        splitString = ingredient.name.split()
-        print('Try to search for SPLIT ingredient...' + str(splitString))
+        split_string = ingredient.name.split()
+        print('Try to search for SPLIT ingredient...' + str(split_string))
 
-        for split in splitString:
+        for split in split_string:
             print('split:' + split)
             params = dict(
                 format='json',
@@ -132,14 +130,14 @@ def getAllTags(self):
             print(data[1])
             print('iterate over splitted search result...')
             if data[1]:
-                for searchResult in data[1]:
-                    print('try... ' + searchResult)
+                for search_result in data[1]:
+                    print('try... ' + search_result)
                     params = dict(
                         format='json',
                         action='query',
                         prop='categories',
                         cllimit='max',
-                        titles=searchResult,
+                        titles=search_result,
                         redirects='true',
                     )
                     resp = requests.get(url=url, params=params)
@@ -150,21 +148,16 @@ def getAllTags(self):
                             if "categories" in data["query"]["pages"][page]:
                                 for category in data["query"]["pages"][page]["categories"]:
                                     print(category["title"])
-                                    if category["title"] in drinkcategoriesList.values or category[
-                                        "title"] in foodcategoriesList.values:
+                                    if category["title"] in drinkcategories_list.values or category[
+                                            "title"] in foodcategories_list.values:
                                         print("is in list!")
-                                        c = category["title"].replace("Category:", "")
-                                        if len(c) < 127:
+                                        cat = category["title"].replace("Category:", "")
+                                        if len(cat) < 127:
                                             ingredient.ingredient_tags.add(
-                                                IngredientTag.objects.get_or_create(name=c)[0])
-                                            print(c + " --- saved into DB")
+                                                IngredientTag.objects.get_or_create(name=cat)[0])
+                                            print(cat + " --- saved into DB")
 
 
 class Command(BaseCommand, ABC):
-
     def handle(self, *args, **kwargs):
-        getAllTags(self)
-
-
-
-
+        get_all_tags(self)

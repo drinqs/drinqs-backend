@@ -1,19 +1,18 @@
-from django.db import migrations
-from drinqsapp.models import Cocktail, Glass, Ingredient, IngredientTag, CocktailIngredient, Review
-import numpy as np
-import pandas as pd
 import re
+import pandas as pd
+from drinqsapp.models import Cocktail, Glass, Ingredient, CocktailIngredient
+
 
 
 class CsvImport():
-    def importDatasets(self, *args):
+    def import_datasets(self, *args):
         return [pd.read_csv(filename) for filename in args]
 
-    def cleanDatasets(self, df1, df2, df3):
-        # drop unnecessary columns and rename in a consistent way
-        # df1
-        df1.drop(columns=['Unnamed: 0', 'dateModified', 'idDrink', 'strVideo', 'strIBA', 'strIngredient13', 'strIngredient14',
-                          'strIngredient15', 'strMeasure13', 'strMeasure14', 'strMeasure15'], errors='ignore', inplace=True)
+    def clean_datasets(self, df1, df2, df3):
+        """drop unnecessary columns and rename in a consistent way"""
+        df1.drop(columns=['Unnamed: 0', 'dateModified', 'idDrink', 'strVideo', 'strIBA',
+                          'strIngredient13', 'strIngredient14', 'strIngredient15', 'strMeasure13',
+                          'strMeasure14', 'strMeasure15'], errors='ignore', inplace=True)
         df1.rename(columns={'strDrink': 'name', 'strDrinkThumb': 'thumbnailurl',
                             'strInstructions': 'preparation'}, inplace=True)
         df1.columns = [re.sub(r'^str', '', colname).lower()
@@ -35,11 +34,12 @@ class CsvImport():
                             'Glassware': 'glass'}, inplace=True)
         df3.rename(str.lower, axis='columns', inplace=True)
 
-    def joinDatasets(self, df2, df3):
+    def join_datasets(self, df2, df3):
         # join data sets 2 and 3 as they have the same structure
-        return df2.join(df3.set_index(['name', 'glass', 'ingredients', 'preparation']), on=['name', 'glass', 'ingredients', 'preparation'], how='outer')
+        return df2.join(df3.set_index(['name', 'glass', 'ingredients', 'preparation']), \
+                        on=['name', 'glass', 'ingredients', 'preparation'], how='outer')
 
-    def populateDatabase(self, df1, df23):
+    def populate_database(self, df1, df23):
         # glasses
         glasses = pd.Series(map(lambda x: str(x).title() if isinstance(x, str) else x, df1.glass.append(
             df23.glass))).dropna().drop_duplicates().sort_values(ignore_index=True)
@@ -67,14 +67,15 @@ class CsvImport():
                 glass = None
             alc = 2 if 'No' in str(cocktail.alcoholic) or 'Optional' in str(
                 cocktail.alcoholic) else 1 if str(cocktail.alcoholic) == 'Alcoholic' else 0
-            cocktailObject = Cocktail.objects.create(
-                name=cocktail['name'], alcoholic=alc, category=cocktail.category, preparation=cocktail.preparation, thumbnail_url=cocktail.thumbnailurl, glass=glass)
-            cocktailObject.save()
+            cocktail_object = Cocktail.objects.create(
+                name=cocktail['name'], alcoholic=alc, category=cocktail.category,
+        preparation=cocktail.preparation, thumbnail_url=cocktail.thumbnailurl, glass=glass)
+            cocktail_object.save()
             for i in range(1, sum('ingredient' in col for col in df1.columns) + 1):
                 if isinstance(cocktail[f'ingredient{i}'], str):
-                    ingredientObject = Ingredient.objects.get(
+                    ingredient_object = Ingredient.objects.get(
                         name=cocktail[f'ingredient{i}'].strip().title())
                     measurement = cocktail[f'measure{i}'].strip() if isinstance(
                         cocktail[f'measure{i}'], str) else None
                     CocktailIngredient.objects.create(
-                        measurement=measurement, position=i, cocktail=cocktailObject, ingredient=ingredientObject).save()
+                        measurement=measurement, position=i, cocktail=cocktail_object, ingredient=ingredient_object).save()

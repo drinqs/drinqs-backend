@@ -1,0 +1,18 @@
+from abc import ABC
+import warnings
+import numpy as np
+from django.core.management.base import BaseCommand
+import autofixture
+
+
+class Command(BaseCommand, ABC):
+    def handle(self, *args, **kwargs):
+        bo_list = [True, False]
+        warnings.simplefilter(action='ignore', category=FutureWarning)
+        for i in range(1, 25):
+            bad_review = autofixture.create("drinqsapp.review", 15, field_values={'liked': True,
+                                                                                  'bookmarked': np.random.choice(
+                                                                                      bo_list, 1)})
+            middle_review = autofixture.create("drinqsapp.review", 15,
+                                               field_values={'liked': np.random.choice(bo_list, 1),
+                                                             'bookmarked': np.random.choice(bo_list, 1)})

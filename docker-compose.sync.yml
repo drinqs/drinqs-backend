@@ -5,10 +5,6 @@ services:
     volumes:
       - "app:/app"
 
-  # assets:
-  #   volumes:
-  #     - "app:/app"
-
   sync:
     image: cweagans/bg-sync
     volumes:

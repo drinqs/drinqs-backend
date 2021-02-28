@@ -4,4 +4,4 @@ from drinqsapp.importer.data_handling import DataHandler
 
 class Command(BaseCommand, ABC):
     def handle(self, *args, **kwargs):
-        DataHandler().getMrBostonData()
+        DataHandler().get_mr_boston_data()
