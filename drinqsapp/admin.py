@@ -1,14 +1,10 @@
 from django.contrib import admin
 
-# TODO
-# Remove for production
 from .models import Cocktail, Glass, Ingredient, IngredientTag, CocktailIngredient, Review, User
 
 # Register your models here.
 
 # Just for manual administration of database
-# TODO
-# Remove for production
 admin.site.register(Cocktail)
 admin.site.register(Glass)
 admin.site.register(Ingredient)
